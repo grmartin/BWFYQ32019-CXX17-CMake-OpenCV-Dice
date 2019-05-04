@@ -31,6 +31,11 @@ namespace jpeganno {
     template<typename T>
     std::vector<std::vector<T>> chunk(std::vector<T> vector, size_t interval_size) {
         std::vector<std::vector<T>> out;
+
+        if (interval_size == 0) {
+            return out;
+        }
+
         out.reserve(vector.size() / interval_size + 1);
         typedef decltype(vector.begin()) it_t;
         for_each_interval<it_t>(

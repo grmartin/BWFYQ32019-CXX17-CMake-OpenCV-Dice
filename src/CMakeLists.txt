@@ -75,6 +75,12 @@ add_executable(CVDiceAnnotator annotation/main.cpp annotation/VecByte.h annotati
 add_library(LibCVDiceAnnotation
         annotation/JpegAnnotation.cpp annotation/JpegAnnotation.h
 )
+set_target_properties(CVDice PROPERTIES
+        ENABLE_EXPORTS 1
+        OUTPUT_NAME CVDice_Testable
+        # Test placing exe import library in unique directory.
+        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/exe
+        )
 
 target_link_libraries(CVDice LibCVDiceAnnotation)
 target_link_libraries(CVDiceAnnotator LibCVDiceAnnotation)
@@ -91,3 +97,5 @@ endif()
 if (LINUX)
  target_compile_options(LibCVDiceAnnotation PUBLIC -std=c++17)
 endif()
+
+add_subdirectory(tests)
