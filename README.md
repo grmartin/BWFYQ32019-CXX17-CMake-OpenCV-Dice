@@ -7,6 +7,7 @@ This project uses CMake and Hunter for package management.
 Currently the plan is as follows (and subject to change):
 
 1. ~~Build application + library to encode/decode expected values in to a JPEG image. : \[*COMPLETE*]~~
-2. Build application to read pips off dice and compare to values. : \[*WIP*]
-3. Update to handle live images (on simple dice) : \[*PLANNED*]
-4. Improve as time goes on to detect different colors/types of pip-ed dice. : \[*PLANNED*]
+2. Add in quick testing suite : \[*WIP*]
+3. Build application to read pips off dice and compare to values. : \[*WIP*]
+4. Update to handle live images (on simple dice) : \[*PLANNED*]
+5. Improve as time goes on to detect different colors/types of pip-ed dice. : \[*PLANNED*]
