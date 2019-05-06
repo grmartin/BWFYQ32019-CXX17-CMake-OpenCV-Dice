@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <climits>
 
-namespace jpeganno {
+namespace jpeganno::vecbyte {
     typedef std::vector<std::byte> VecByte;
 
     template <typename T> VecByte structToVecByte(T structure) {

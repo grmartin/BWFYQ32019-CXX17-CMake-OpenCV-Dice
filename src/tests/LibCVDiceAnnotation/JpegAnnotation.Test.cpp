@@ -13,6 +13,8 @@
 #ifndef CVDICE_JPEGANNOTATION_TEST_H
 #define CVDICE_JPEGANNOTATION_TEST_H
 
+using namespace jpeganno::vecbyte;
+
 TEST_CASE("JPEG Annotation", "[library]") {
     const std::string extension = ".jpg";
     uint64_t jpegDataSz;
@@ -81,8 +83,8 @@ TEST_CASE("JPEG Annotation", "[library]") {
                                       values                                             \
                                     }
 
-    std::function<bool(jpeganno::VecByte, std::vector<unsigned char>)> subsection_equality =
-            [](jpeganno::VecByte contents, std::vector<unsigned char> subsection_expectation) {
+    std::function<bool(VecByte, std::vector<unsigned char>)> subsection_equality =
+            [](VecByte contents, std::vector<unsigned char> subsection_expectation) {
                 return std::equal(contents.begin(), contents.end(),
                                   subsection_expectation.begin(),
                                   [](std::byte a, const char b) { return a == std::byte(b); });
@@ -104,7 +106,7 @@ TEST_CASE("JPEG Annotation", "[library]") {
 
             jpeganno::JpegAnnotation::writeExpectedValues(path.generic_string(), toEightBitVec(subsection_value));
 
-            const auto file_data_bytes_ = jpeganno::read(path.generic_string());
+            const auto file_data_bytes_ = read(path.generic_string());
             CAPTURE(file_data_bytes_, subsection_bytes);
             REQUIRE(subsection_equality(file_data_bytes_, subsection_bytes));
         }
@@ -121,7 +123,7 @@ TEST_CASE("JPEG Annotation", "[library]") {
 
             jpeganno::JpegAnnotation::writeExpectedValues(path.generic_string(), toEightBitVec(subsection_value));
 
-            const auto file_data_bytes_ = jpeganno::read(path.generic_string());
+            const auto file_data_bytes_ = read(path.generic_string());
             CAPTURE(file_data_bytes_, subsection_bytes);
             REQUIRE(subsection_equality(file_data_bytes_, subsection_bytes));
         }
@@ -138,7 +140,7 @@ TEST_CASE("JPEG Annotation", "[library]") {
 
             jpeganno::JpegAnnotation::writeExpectedValues(path.generic_string(), toEightBitVec(subsection_value));
 
-            const auto file_data_bytes_ = jpeganno::read(path.generic_string());
+            const auto file_data_bytes_ = read(path.generic_string());
             CAPTURE(file_data_bytes_, subsection_bytes);
             REQUIRE(subsection_equality(file_data_bytes_, subsection_bytes));
         }
@@ -157,7 +159,7 @@ TEST_CASE("JPEG Annotation", "[library]") {
 
             jpeganno::JpegAnnotation::writeExpectedValues(path.generic_string(), toEightBitVec(subsection_value));
 
-            const auto file_data_bytes_ = jpeganno::read(path.generic_string());
+            const auto file_data_bytes_ = read(path.generic_string());
             CAPTURE(file_data_bytes_, subsection_bytes);
             REQUIRE(subsection_equality(file_data_bytes_, subsection_bytes));
         }
@@ -173,7 +175,7 @@ TEST_CASE("JPEG Annotation", "[library]") {
             auto path = safeFileName("RIMG_"+subsection_value);
             CAPTURE(path);
 
-            jpeganno::write(jpeganno::vectorToVecByte(subsection_bytes), path.generic_string());
+            write(vectorToVecByte(subsection_bytes), path.generic_string());
 
             REQUIRE(fs::exists(path));
             REQUIRE(fs::file_size(path) == subsection_bytes.size());
@@ -191,7 +193,7 @@ TEST_CASE("JPEG Annotation", "[library]") {
             auto path = safeFileName("RIMG_"+subsection_value);
             CAPTURE(path);
 
-            jpeganno::write(jpeganno::vectorToVecByte(subsection_bytes), path.generic_string());
+            write(vectorToVecByte(subsection_bytes), path.generic_string());
 
             REQUIRE(fs::exists(path));
             REQUIRE(fs::file_size(path) == subsection_bytes.size());
@@ -209,7 +211,7 @@ TEST_CASE("JPEG Annotation", "[library]") {
             auto path = safeFileName("RIMG_"+subsection_value);
             CAPTURE(path);
 
-            jpeganno::write(jpeganno::vectorToVecByte(subsection_bytes), path.generic_string());
+            write(vectorToVecByte(subsection_bytes), path.generic_string());
 
             REQUIRE(fs::exists(path));
             REQUIRE(fs::file_size(path) == subsection_bytes.size());
@@ -229,7 +231,7 @@ TEST_CASE("JPEG Annotation", "[library]") {
             auto path = safeFileName("RIMG_"+subsection_value);
             CAPTURE(path);
 
-            jpeganno::write(jpeganno::vectorToVecByte(subsection_bytes), path.generic_string());
+            write(vectorToVecByte(subsection_bytes), path.generic_string());
 
             REQUIRE(fs::exists(path));
             REQUIRE(fs::file_size(path) == subsection_bytes.size());
@@ -264,19 +266,19 @@ TEST_CASE("JPEG Annotation", "[library]") {
 
             jpeganno::JpegAnnotation::writeExpectedValues(path.generic_string(), toEightBitVec(subsection_value1));
 
-            auto file_data_bytes_1 = jpeganno::read(path.generic_string());
+            auto file_data_bytes_1 = read(path.generic_string());
             CAPTURE(file_data_bytes_1, subsection_bytes1);
             REQUIRE(subsection_equality(file_data_bytes_1, subsection_bytes1));
 
             jpeganno::JpegAnnotation::writeExpectedValues(path.generic_string(), toEightBitVec(subsection_value2));
 
-            const auto file_data_bytes_2 = jpeganno::read(path.generic_string());
+            const auto file_data_bytes_2 = read(path.generic_string());
             CAPTURE(file_data_bytes_2, subsection_bytes2);
             REQUIRE(subsection_equality(file_data_bytes_2, subsection_bytes2));
 
             jpeganno::JpegAnnotation::writeExpectedValues(path.generic_string(), toEightBitVec(subsection_value3));
 
-            const auto file_data_bytes_3 = jpeganno::read(path.generic_string());
+            const auto file_data_bytes_3 = read(path.generic_string());
             CAPTURE(file_data_bytes_3, subsection_bytes3);
             REQUIRE(subsection_equality(file_data_bytes_3, subsection_bytes3));
         }

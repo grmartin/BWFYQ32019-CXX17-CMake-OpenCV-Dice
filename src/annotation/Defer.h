@@ -1,7 +1,7 @@
 #ifndef DEFER_H
 #define DEFER_H
 
-namespace jpeganno {
+namespace jpeganno::util::defer {
 	template <typename Fn> struct Defer {
 	private:
 		Fn action;

@@ -9,7 +9,7 @@
 #include <ctgmath>
 #include <cstddef>
 
-namespace jpeganno {
+namespace jpeganno::util::chunk {
     template<typename Iterator>
     void for_each_interval(Iterator begin, Iterator end, size_t interval_size,
                            std::function<void(Iterator, Iterator)> operation) {

@@ -15,6 +15,9 @@
 #include "Chunk.h"
 
 using namespace jpeganno;
+using namespace jpeganno::util::defer;
+using namespace jpeganno::util::chunk;
+using namespace jpeganno::vecbyte;
 
 constexpr bool ENABLE_DEBUGGING = false;
 #define CDL_STREAM(c, s) if (c) s
