@@ -241,6 +241,46 @@ TEST_CASE("JPEG Annotation", "[library]") {
             REQUIRE(subsection_ints == parsed_ints____);
         }
     }
+
+    SECTION("Setting and altering values") {
+        std::string subsection_value1 = "1,2,3,4,5,6";
+        std::vector<unsigned char> subsection_bytes1 = get1PxJpeg(MARKER(0x00, 0x0E, /*v*/ 0x00, 0x03, 0x58, 0xD1));
+
+        std::string subsection_value2 = "1,1,1,6,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,5,5,5,5,1,1,1,6,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,5,5,5,5";
+        std::vector<unsigned char> subsection_bytes2 = get1PxJpeg(
+                MARKER(0x00, 0x1E, /*v*/ 0x12, 0x48, 0x9C, 0x49, 0x24, 0x91, 0xB6, 0xDA, 0x09, 0xC4, 0x9B, 0x6D, 0x1B,
+                       0x6D, 0xA4, 0x92, 0x00, 0xB6, 0xD9, 0x24));
+
+        std::string subsection_value3 = "6";
+        std::vector<unsigned char> subsection_bytes3 = get1PxJpeg(MARKER(0x00, 0x0E, /*v*/ 0x00, 0x00, 0x00, 0x06));
+
+        SECTION("Should write 1-6, then a alrge set, then simply 6 and have deterministic results") {
+            auto path = safeFileName("RWIMG_"+fs::unique_path().generic_string());
+            CAPTURE(path);
+            copyBlankJpeg(path);
+
+            REQUIRE(fs::exists(path));
+            REQUIRE(fs::file_size(path) == jpegDataSz);
+
+            jpeganno::JpegAnnotation::writeExpectedValues(path.generic_string(), toEightBitVec(subsection_value1));
+
+            auto file_data_bytes_1 = jpeganno::read(path.generic_string());
+            CAPTURE(file_data_bytes_1, subsection_bytes1);
+            REQUIRE(subsection_equality(file_data_bytes_1, subsection_bytes1));
+
+            jpeganno::JpegAnnotation::writeExpectedValues(path.generic_string(), toEightBitVec(subsection_value2));
+
+            const auto file_data_bytes_2 = jpeganno::read(path.generic_string());
+            CAPTURE(file_data_bytes_2, subsection_bytes2);
+            REQUIRE(subsection_equality(file_data_bytes_2, subsection_bytes2));
+
+            jpeganno::JpegAnnotation::writeExpectedValues(path.generic_string(), toEightBitVec(subsection_value3));
+
+            const auto file_data_bytes_3 = jpeganno::read(path.generic_string());
+            CAPTURE(file_data_bytes_3, subsection_bytes3);
+            REQUIRE(subsection_equality(file_data_bytes_3, subsection_bytes3));
+        }
+    }
 }
 
 #endif //CVDICE_JPEGANNOTATION_TEST_H

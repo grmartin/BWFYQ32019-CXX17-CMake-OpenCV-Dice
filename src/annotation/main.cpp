@@ -18,8 +18,6 @@ int processArguments(std::vector<std::string> arguments);
 void printHelp();
 int getFromJpeg(std::vector<std::string> arguments);
 int setInJpeg(std::vector<std::string> arguments);
-int internalTest(std::vector<std::string> arguments);
-
 
 typedef struct {
     std::string switchName;
@@ -30,8 +28,7 @@ typedef struct {
 const std::vector<callTable> getCalls() {
     static const std::vector<callTable> calls = {
         {"get", getFromJpeg},
-        {"set", setInJpeg},
-        {"^internal_test", internalTest}
+        {"set", setInJpeg}
     };
 
     return calls;
@@ -115,69 +112,4 @@ int setInJpeg(std::vector<std::string> arguments) {
     JpegAnnotation::writeExpectedValues(fileName, valueInts);
 
     return EXIT_SUCCESS;
-}
-
-void loopErr(std::vector<uint8_t> values) {
-    if (values.empty()) {
-        std::cerr << "<EMPTY>" << std::endl;
-        return;
-    }
-
-    int i = 0;
-    for (const uint8_t &piece : values) {
-        i == 0 ? (std::cerr << static_cast<unsigned>(piece)) : (std::cerr << "," << static_cast<unsigned>(piece));
-        i++;
-    }
-
-    std::cerr << std::endl;
-}
-
-
-int internalTest1(std::vector<std::string> arguments) {
-    const std::regex regex("[,;]");
-    auto const fileName = arguments.at(0);
-    auto const values = split(trim(arguments.at(1)), regex);
-
-    std::vector<uint8_t> valueInts;
-    valueInts.reserve(values.size());
-
-    for (auto &value: values) {
-        valueInts.push_back(std::stoi(value));
-    }
-
-    JpegAnnotation::writeExpectedValues(fileName, valueInts);
-    std::vector<uint8_t> readValues = JpegAnnotation::parseExpectedValues(fileName);
-
-    if (readValues == valueInts) {
-        std::cout << "SUCCESS!" << std::endl;
-        return EXIT_SUCCESS;
-    } else {
-        std::cerr << "FAILURE:" << std::endl;
-        std::cerr << "\tIN:  ";
-
-        loopErr(valueInts);
-        std::cerr << "\tOUT: ";
-
-        loopErr(readValues);
-
-        return EXIT_FAILURE;
-    }
-}
-
-
-int internalTest(std::vector<std::string> arguments) {
-    auto run = internalTest1(arguments);
-
-    if (run != EXIT_SUCCESS) return run;
-
-    arguments[1] = "6,5,4,3,2,1,1,2";
-    run = internalTest1(arguments);
-    if (run != EXIT_SUCCESS) return run;
-    arguments[1] = "1";
-    run = internalTest1(arguments);
-    if (run != EXIT_SUCCESS) return run;
-    arguments[1] = "1,5,6,6,6,5,3,6,6,6,6,6,6,6,6,6,6,6,1,5,6,6,6,5,3,6,6,6,6,6,6,6,6,6,6,6";
-    run = internalTest1(arguments);
-    if (run != EXIT_SUCCESS) return run;
-    return run;
 }
