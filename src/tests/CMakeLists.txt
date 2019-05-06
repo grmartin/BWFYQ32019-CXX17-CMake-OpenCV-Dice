@@ -6,6 +6,13 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 project(CVDiceTests)
 
-add_executable(CVDiceTests primary.cpp OnePXJpeg.hpp LibCVDiceAnnotation/Chunk.Test.h)
+add_executable(CVDiceTests
+        main.cpp
+
+        OnePXJpeg.hpp
+
+        LibCVDiceAnnotation/Chunk.Test.cpp
+        LibCVDiceAnnotation/JpegAnnotation.Test.cpp
+)
 target_link_libraries(CVDiceTests CVDice)
 target_link_libraries(CVDiceTests LibCVDiceAnnotation)

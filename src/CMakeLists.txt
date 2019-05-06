@@ -70,7 +70,7 @@ message(STATUS "    libraries: ${OpenCV_LIBS}")
 message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 
 add_executable(CVDice main.cpp)
-add_executable(CVDiceAnnotator annotation/main.cpp annotation/VecByte.h annotation/Chunk.h)
+add_executable(CVDiceAnnotator annotation/main.cpp annotation/VecByte.h annotation/Chunk.h annotation/Strings.h)
 
 add_library(LibCVDiceAnnotation
         annotation/JpegAnnotation.cpp annotation/JpegAnnotation.h

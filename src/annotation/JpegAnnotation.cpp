@@ -1,3 +1,4 @@
+#include <climits>
 //
 // Created by Glenn R. Martin on 4/29/2019.
 //
@@ -91,13 +92,6 @@ inline void testIsOpen(const std::function<bool()> &is_open) {
     if (!is_open()) throw std::runtime_error("Unable to open path.");
 }
 
-template<typename T>
-inline std::byte eat1(T &stream) {
-    unsigned char byte = 0;
-    stream >> byte;
-    return std::byte{byte};
-}
-
 template<typename K, typename M>
 inline bool map_has_key(M &map, K key) {
     return map.find(key) != map.end();
@@ -124,7 +118,7 @@ std::vector<uint8_t> JpegAnnotation::parseExpectedValues(const fs::path &jpegFil
 
     while (stream.good()) {
         last = curr;
-        curr = eat1(stream);
+        curr = getAStreamByte(stream);
 
         if (last == std::byte{JPEG_PRECURSOR} && curr == std::byte{CVDICE_MARKER}) {
             DBG_STREAM(std::cout) << "Found CVDice Marker (FFED) @" << stream.tellg() << std::endl;
@@ -177,15 +171,14 @@ void JpegAnnotation::writeExpectedValues(const fs::path &jpegFilePath, const std
 
     auto streamFlags = std::ios::binary | std::ios::out | std::ios::in;
 
-    std::fstream stream(jpegFilePath.generic_string(), streamFlags);
+    std::fstream stream(jpegFilePath.generic_string(), streamFlags | std::ios::ate);
     stream.unsetf(std::ios::skipws);
 
     testIsOpen([&stream]() { return stream.is_open(); });
 
-    auto finallyCloseStream = defer([&stream]() { if (stream.is_open()) { stream.close(); }});
-
     std::byte last{0x00};
     std::byte curr{0x00};
+    stm_off_t skip = 0;
 
     struct jpgBlockLocation {
         uint16_t hSz;
@@ -198,6 +191,7 @@ void JpegAnnotation::writeExpectedValues(const fs::path &jpegFilePath, const std
         struct jpgBlockLocation loc = jpgBlockLocation{getHsz<uint16_t>(), static_cast<uint64_t>(location), 4, size};
         return static_cast<struct jpgBlockLocation>(loc);
     };
+
     constexpr auto setImgLocation = [](auto location) {
         return static_cast<struct jpgBlockLocation>(jpgBlockLocation{getHsz<uint16_t>(), static_cast<uint64_t>(location), 2, 0});
     }; // SOI and EOI markers have no size, they just are.
@@ -205,50 +199,55 @@ void JpegAnnotation::writeExpectedValues(const fs::path &jpegFilePath, const std
     std::map<std::byte, struct jpgBlockLocation> locations;
     VecByte fileArray;
 
-    fileArray.reserve(fs::file_size(jpegFilePath));
+    stm_off_t fSize = stream.tellg();
+    stream.seekg(0, std::ios::beg);
 
-    int skip = 0;
+    fileArray.reserve(fSize);
 
-    while (!stream.fail()) {
-        if (--skip > 0) continue;
-        last = curr;
-        curr = eat1(stream);
+    stm_off_t i = 0;
+    std::for_each(
+            std::istreambuf_iterator<char>(stream),
+            std::istreambuf_iterator<char>(),
+            [&](char b){
+                if (--skip < 0) return;
 
-        fileArray.push_back(curr);
+                last = curr;
+                curr = std::byte(static_cast<unsigned char>(b));
 
-        if (last != std::byte{JPEG_PRECURSOR}) continue;
+                if (last != std::byte{JPEG_PRECURSOR}) {
+                    fileArray.push_back(curr);
+                    i++;
+                    return;
+                };
 
-        if (curr == std::byte{CVDICE_MARKER}) {
-            stm_off_t markerLocation = (stm_off_t)stream.tellg() - getHsz<stm_off_t>();
+                auto headerStart = i-1;
 
-            DBG_STREAM(std::cout) << "Found CVDice Marker (FFED) @" << std::dec << markerLocation << std::endl;
+                if (curr == std::byte{CVDICE_MARKER}) {
+                    DBG_STREAM(std::cout) << "Found CVDice Marker (FFED) @" << std::dec << headerStart << std::endl;
 
-            uint16_t length;
-            stream.read(reinterpret_cast<char*>(&length), sizeof(uint16_t));
-            length = FR_FILE_ORDER_16(length);
+                    uint16_t length;
+                    stream.read(reinterpret_cast<char*>(&length), sizeof(uint16_t));
+                    length = FR_FILE_ORDER_16(length);
 
-            if (length >= sizeof(typeMarker())) {
-                uint64_t contentMarker;
-                stream.read(reinterpret_cast<char*>(&contentMarker), sizeof(uint64_t));
-                if (contentMarker == typeMarker()) {
-                    skip = length;
-                    // we need to reject what weve already consumed... (the header)
-                    for (int reject = 0; getHsz<int>() > reject; reject++) {
-                        fileArray.pop_back();
+                    if (length >= sizeof(typeMarker())) {
+                        uint64_t contentMarker;
+                        stream.read(reinterpret_cast<char*>(&contentMarker), sizeof(uint64_t));
+                        if (contentMarker == typeMarker()) {
+                            skip = length;
+                        }
                     }
+                    return;
+                } else if (curr == std::byte{SOI}) {
+                    locations[std::byte{SOI}] = setImgLocation(headerStart);
+                    DBG_STREAM(std::cout) << "Found Start of Image Marker (FFD8) @" << std::dec << headerStart << std::endl;
+                } else if (curr == std::byte{EOI}) {
+                    locations[std::byte{EOI}] = setImgLocation(headerStart);
+                    DBG_STREAM(std::cout) << "Found End of Image Marker (FFD9) @" << std::dec << headerStart << std::endl;
                 }
-            }
-        } else if (curr == std::byte{SOI}) {
-            stm_off_t markerLocation = (stm_off_t)stream.tellg() - getHsz<stm_off_t>();
-            locations[std::byte{SOI}] = setImgLocation(markerLocation);
-            DBG_STREAM(std::cout) << "Found Start of Image Marker (FFD8) @" << std::dec << markerLocation << std::endl;
-        } else if (curr == std::byte{EOI}) {
-            stm_off_t markerLocation = (stm_off_t)stream.tellg() - getHsz<stm_off_t>();
-            locations[std::byte{EOI}] = setImgLocation(fileArray.size());
-            DBG_STREAM(std::cout) << "Found End of Image Marker (FFD9) @" << std::dec << markerLocation << std::endl;
-            break;
-        }
-    }
+
+                fileArray.push_back(curr);
+                i++;
+            });
 
     stream.close();
 
@@ -294,26 +293,19 @@ void JpegAnnotation::writeExpectedValues(const fs::path &jpegFilePath, const std
     append(blockBytes, toVecByte(typeMarker()));
     append(blockBytes, newBytes);
 
-    fileArray.insert(fileArray.begin() + (eoiLocation.st - eoiLocation.hSz), blockBytes.begin(), blockBytes.end());
+    fileArray.insert(fileArray.begin() + eoiLocation.st, blockBytes.begin(), blockBytes.end());
 
     stream.open(jpegFilePath.generic_string(), streamFlags | std::ios::trunc);
     stream.unsetf(std::ios::skipws);
 
     testIsOpen([&stream]() { return stream.is_open(); });
 
-    DBG_STREAM(std::cout) << "Writing, Last 25:" << std::endl;
-    int i = 0;
-    std::for_each(fileArray.begin(), fileArray.end(), [&stream, &i, &fileArray](std::byte byte) {
-        stream << static_cast<char>(byte);
-        i++;
-
-        if (i > (fileArray.size() - 25)) {
-            DBG_STREAM(std::cout) << std::hex << static_cast<int>(byte) << ":";
-        }
+    std::for_each(fileArray.begin(), fileArray.end(), [&stream](std::byte byte) {
+        char cbyte = static_cast<char>(byte);
+        stream.write(&cbyte, 1);
     });
-    DBG_STREAM(std::cout) << "." << std::endl;
 
-    stream.flush();
+    stream.close();
 
     DBG_STREAM(std::cout) << "Proc done." << std::endl;
 }
