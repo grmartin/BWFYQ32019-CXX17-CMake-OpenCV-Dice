@@ -13,13 +13,26 @@
 namespace jpeganno {
     typedef std::vector<std::byte> VecByte;
 
-    template <typename T> VecByte toVecByte(T structure) {
+    template <typename T> VecByte structToVecByte(T structure) {
         std::vector<std::byte> vec;
         const uint8_t *ptr = (uint8_t *)&structure;
         const uint64_t sz = sizeof(structure);
         for(uint64_t i = 0; i < sz; i++) {
             vec.push_back(std::byte{ptr[i]});
         }
+        return vec;
+    }
+
+    template<typename T> VecByte vectorToVecByte(std::vector<T> vector) {
+        std::vector<std::byte> vec;
+        vec.reserve(vector.size());
+        std::for_each(
+                vector.begin(),
+                vector.end(),
+                [&](T b){
+                    vec.push_back(std::byte(b));
+                }
+        );
         return vec;
     }
 
@@ -33,6 +46,20 @@ namespace jpeganno {
     inline VecByte& append(VecByte& target, VecByte from) {
         target.insert(target.end(), from.begin(), from.end());
         return target;
+    }
+
+    inline void write(const VecByte& bytes, const std::string& path) {
+        std::ofstream stream(path, std::ios::binary | std::ios::out | std::ios::trunc);
+        stream.unsetf(std::ios::skipws);
+
+        if (!stream.is_open()) return;
+
+        std::for_each(bytes.begin(), bytes.end(), [&stream](std::byte byte) {
+            char cbyte = static_cast<char>(byte);
+            stream.write(&cbyte, 1);
+        });
+
+        stream.close();
     }
 
     inline VecByte read(const std::string& path) {

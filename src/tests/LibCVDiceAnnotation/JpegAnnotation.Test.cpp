@@ -162,6 +162,85 @@ TEST_CASE("JPEG Annotation", "[library]") {
             REQUIRE(subsection_equality(file_data_bytes_, subsection_bytes));
         }
     }
+
+    SECTION("Reading an image") {
+        std::string subsection_value;
+        std::vector<unsigned char> subsection_bytes;
+
+        subsection_value = "1,2,3,4,5,6";
+        subsection_bytes = get1PxJpeg(MARKER(0x00, 0x0E, /*v*/ 0x00, 0x03, 0x58, 0xD1));
+        SECTION("Should parse 1,2,3,4,5,6 from data") {
+            auto path = safeFileName("RIMG_"+subsection_value);
+            CAPTURE(path);
+
+            jpeganno::write(jpeganno::vectorToVecByte(subsection_bytes), path.generic_string());
+
+            REQUIRE(fs::exists(path));
+            REQUIRE(fs::file_size(path) == subsection_bytes.size());
+
+            auto subsection_ints = toEightBitVec(subsection_value);
+            auto parsed_ints____ = jpeganno::JpegAnnotation::parseExpectedValues(path.generic_string());
+
+            CAPTURE(subsection_ints, parsed_ints____);
+            REQUIRE(subsection_ints == parsed_ints____);
+        }
+
+        subsection_value = "6";
+        subsection_bytes = get1PxJpeg(MARKER(0x00, 0x0E, /*v*/ 0x00, 0x00, 0x00, 0x06));
+        SECTION("Should parse 6 from data") {
+            auto path = safeFileName("RIMG_"+subsection_value);
+            CAPTURE(path);
+
+            jpeganno::write(jpeganno::vectorToVecByte(subsection_bytes), path.generic_string());
+
+            REQUIRE(fs::exists(path));
+            REQUIRE(fs::file_size(path) == subsection_bytes.size());
+
+            auto subsection_ints = toEightBitVec(subsection_value);
+            auto parsed_ints____ = jpeganno::JpegAnnotation::parseExpectedValues(path.generic_string());
+
+            CAPTURE(subsection_ints, parsed_ints____);
+            REQUIRE(subsection_ints == parsed_ints____);
+        }
+
+        subsection_value = "1,6,2,3,1,6";
+        subsection_bytes = get1PxJpeg(MARKER(0x00, 0x0E, /*v*/ 0x00, 0x03, 0x16, 0xB1));
+        SECTION("Should parse 1,9,2,3,0,22 (previously corrected for bounds) from data") {
+            auto path = safeFileName("RIMG_"+subsection_value);
+            CAPTURE(path);
+
+            jpeganno::write(jpeganno::vectorToVecByte(subsection_bytes), path.generic_string());
+
+            REQUIRE(fs::exists(path));
+            REQUIRE(fs::file_size(path) == subsection_bytes.size());
+
+            auto subsection_ints = toEightBitVec(subsection_value);
+            auto parsed_ints____ = jpeganno::JpegAnnotation::parseExpectedValues(path.generic_string());
+
+            CAPTURE(subsection_ints, parsed_ints____);
+            REQUIRE(subsection_ints == parsed_ints____);
+        }
+
+        subsection_value = "1,1,1,6,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,5,5,5,5,1,1,1,6,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,5,5,5,5";
+        subsection_bytes = get1PxJpeg(
+                MARKER(0x00, 0x1E, /*v*/ 0x12, 0x48, 0x9C, 0x49, 0x24, 0x91, 0xB6, 0xDA, 0x09, 0xC4, 0x9B, 0x6D, 0x1B,
+                       0x6D, 0xA4, 0x92, 0x00, 0xB6, 0xD9, 0x24));
+        SECTION("Should parse abnormally long sequence 1,1,1,6,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,5,5,5,5,1,1,1,6,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,5,5,5,5 from data") {
+            auto path = safeFileName("RIMG_"+subsection_value);
+            CAPTURE(path);
+
+            jpeganno::write(jpeganno::vectorToVecByte(subsection_bytes), path.generic_string());
+
+            REQUIRE(fs::exists(path));
+            REQUIRE(fs::file_size(path) == subsection_bytes.size());
+
+            auto subsection_ints = toEightBitVec(subsection_value);
+            auto parsed_ints____ = jpeganno::JpegAnnotation::parseExpectedValues(path.generic_string());
+
+            CAPTURE(subsection_ints, parsed_ints____);
+            REQUIRE(subsection_ints == parsed_ints____);
+        }
+    }
 }
 
 #endif //CVDICE_JPEGANNOTATION_TEST_H

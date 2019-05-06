@@ -280,7 +280,7 @@ void JpegAnnotation::writeExpectedValues(const fs::path &jpegFilePath, const std
 
 #undef ifSetN
 
-        auto structVec = toVecByte(TO_FILE_ORDER_32(set.bytes));
+        auto structVec = structToVecByte(TO_FILE_ORDER_32(set.bytes));
         newBytes.insert(newBytes.end(), structVec.begin(), structVec.end());
     });
 
@@ -289,8 +289,8 @@ void JpegAnnotation::writeExpectedValues(const fs::path &jpegFilePath, const std
     blockBytes.reserve(getHsz<VecByte::size_type>() + len);
     blockBytes.push_back(std::byte{JPEG_PRECURSOR});
     blockBytes.push_back(std::byte{CVDICE_MARKER});
-    append(blockBytes, toVecByte(TO_FILE_ORDER_16(len)));
-    append(blockBytes, toVecByte(typeMarker()));
+    append(blockBytes, structToVecByte(TO_FILE_ORDER_16(len)));
+    append(blockBytes, structToVecByte(typeMarker()));
     append(blockBytes, newBytes);
 
     fileArray.insert(fileArray.begin() + eoiLocation.st, blockBytes.begin(), blockBytes.end());
