@@ -239,9 +239,11 @@ void JpegAnnotation::writeExpectedValues(const fs::path &jpegFilePath, const std
                             stream.seekg(pos);
                             skipUntil = pos+length;
                             fileArray.pop_back();   // kill 0xFF already added.
+                            return;
                         }
                     }
-                    return;
+
+                    stream.seekg(pos);
                 } else if (curr == std::byte{SOI}) {
                     locations[std::byte{SOI}] = setImgLocation(headerStart);
                     DBG_STREAM(std::cout) << "Found Start of Image Marker (FFD8) @" << std::dec << pos-1 << "/" << std::dec << headerStart << std::endl;

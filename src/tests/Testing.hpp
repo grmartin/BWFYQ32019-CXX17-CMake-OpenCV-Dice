@@ -11,6 +11,5 @@
 #include <sstream>
 
 #include "catch.hpp"
-#include "OnePXJpeg.hpp"
 
 #endif // TESTING_PRIMARY_INCLUDE_H

@@ -5,7 +5,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CVDICE_CMAKE_FIND_PATHS ./ ./lib/* ../stock/*)
+message(STATUS "CMake Include Path: ${CMAKE_MODULE_PATH}")
+message(STATUS "C++ Compiler: ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "System Name: ${CMAKE_SYSTEM_NAME}")
+message(STATUS "CMake System Version: ${CMAKE_SYSTEM_VERSION}")
 
+if(CMAKE_BUILD_TYPE STREQUAL Testing OR CMAKE_BUILD_TYPE STREQUAL Debug)
+ set(CVD_TESTING true)
+endif()
 # MSVC 2019 has std::filesystem, Apple as of Mojave does not so we must include Boost::filesystem, GCC also has it in a
 # differnet place and support is shaky in 7 so lets go boost there too.
 
@@ -48,11 +55,7 @@ if("${CVD_USE_HUNTER}")
  find_package(OpenCV CONFIG REQUIRED)
 endif()
 
-message(STATUS "CMake Include Path: ${CMAKE_MODULE_PATH}")
-message(STATUS "C++ Compiler: ${CMAKE_CXX_COMPILER_ID}")
-message(STATUS "System Name: ${CMAKE_SYSTEM_NAME}")
 
-# include("cmake/DebugBuildEnv.cmake")
 
 # Find OpenCV, you may need to set OpenCV_DIR variable
 # to the absolute path to the directory containing OpenCVConfig.cmake file
@@ -75,12 +78,21 @@ add_executable(CVDiceAnnotator annotation/main.cpp annotation/VecByte.h annotati
 add_library(LibCVDiceAnnotation
         annotation/JpegAnnotation.cpp annotation/JpegAnnotation.h
 )
-set_target_properties(CVDice PROPERTIES
-        ENABLE_EXPORTS 1
-        OUTPUT_NAME CVDice_Testable
-        # Test placing exe import library in unique directory.
-        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/exe
-        )
+
+if (CVD_TESTING)
+ set_target_properties(CVDice PROPERTIES
+         ENABLE_EXPORTS 1
+         OUTPUT_NAME CVDice_Testable
+         # Test placing exe import library in unique directory.
+         ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/exe
+ )
+else()
+ set_target_properties(CVDice PROPERTIES
+          OUTPUT_NAME CVDice
+          # Test placing exe import library in unique directory.
+          ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/exe
+ )
+endif()
 
 target_link_libraries(CVDice LibCVDiceAnnotation)
 target_link_libraries(CVDiceAnnotator LibCVDiceAnnotation)
