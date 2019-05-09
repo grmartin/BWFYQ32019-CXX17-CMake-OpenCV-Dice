@@ -2,11 +2,12 @@
 // Created by Glenn R. Martin on 2019-05-08.
 //
 
+#include <opencv2/opencv.hpp>
+
 #include "JpegFile.h"
 #include "../annotation/Defer.h"
 #include "utils/algorithm.h"
 
-#include <opencv2/opencv.hpp>
 
 cvdice::JpegFile* cvdice::JpegFile::fromFile(const fs::path& filePath) {
     const auto values = jpeganno::JpegAnnotation::parseExpectedValues(filePath);

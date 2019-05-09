@@ -2,9 +2,10 @@
 // Created by Glenn R. Martin on 2019-05-08.
 //
 
-#import <set>
-#import <opencv2/core/mat.hpp>
 #include <ostream>
+#import <set>
+
+#import <opencv2/core/mat.hpp>
 
 #include "../annotation/JpegAnnotation.h"
 
@@ -13,9 +14,9 @@
 
 
 namespace cvdice {
-
     class JpegFile {
-    protected:
+    public:
+        std::multiset<uint8_t> expectedPips;
         cv::Mat matrix;
 
     private:
@@ -26,8 +27,6 @@ namespace cvdice {
         static JpegFile* fromFile(const fs::path& filePath);
 
         friend std::ostream &operator<<(std::ostream &os, const JpegFile &file);
-
-        std::multiset<uint8_t> expectedPips;
     };
 }
 
