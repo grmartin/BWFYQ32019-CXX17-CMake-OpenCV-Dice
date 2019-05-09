@@ -9,7 +9,7 @@
 
 using namespace jpeganno::util::chunk;
 
-TEST_CASE("Chunk", "[templates]") {
+TEST_CASE("jpeganno::util::chunk", "[templates]") {
     GIVEN("an empty vector") {
         std::vector<int> x;
         WHEN("chunk size is 2 we expect an empty result vector") {

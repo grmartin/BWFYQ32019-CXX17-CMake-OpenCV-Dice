@@ -4,6 +4,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+
 set(CVDICE_CMAKE_FIND_PATHS ./ ./lib/* ../stock/*)
 message(STATUS "CMake Include Path: ${CMAKE_MODULE_PATH}")
 message(STATUS "C++ Compiler: ${CMAKE_CXX_COMPILER_ID}")
@@ -72,7 +74,13 @@ message(STATUS "    version: ${OpenCV_VERSION}")
 message(STATUS "    libraries: ${OpenCV_LIBS}")
 message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 
-add_executable(CVDice main.cpp)
+add_executable(CVDice
+
+        main.cpp
+
+        dice/JpegFile.cpp dice/JpegFile.h
+        dice/utils/algorithm.h)
+
 add_executable(CVDiceAnnotator annotation/main.cpp annotation/VecByte.h annotation/Chunk.h annotation/Strings.h)
 
 add_library(LibCVDiceAnnotation

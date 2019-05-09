@@ -28,7 +28,7 @@ template <typename T> inline bool vectorHasSubvector(T vec, T sub) {
     return std::search(vec.begin(), vec.end(), sub.begin(), sub.end()) != vec.end();
 }
 
-TEST_CASE("JPEG Annotation", "[library]") {
+TEST_CASE("jpeganno::JpegAnnotation", "[library]") {
     const std::string extension = ".jpg";
     fs::path onepxstock_file_abspath;
     std::function<fs::path(std::string)> safeFileName;

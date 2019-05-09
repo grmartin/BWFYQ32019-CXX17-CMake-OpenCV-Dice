@@ -18,7 +18,9 @@ if(CVD_TESTING)
         ResourceReader.cpp ResourceReader.h
 
         LibCVDiceAnnotation/Chunk.Test.cpp
-        LibCVDiceAnnotation/JpegAnnotation.Test.cpp)
+        LibCVDiceAnnotation/JpegAnnotation.Test.cpp
+
+        CVDice/utils/algorithm.Test.cpp)
 
  add_custom_target(CVDiceTests_Resources)
 
