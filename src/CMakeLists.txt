@@ -12,51 +12,50 @@ message(STATUS "C++ Compiler: ${CMAKE_CXX_COMPILER_ID}")
 message(STATUS "System Name: ${CMAKE_SYSTEM_NAME}")
 message(STATUS "CMake System Version: ${CMAKE_SYSTEM_VERSION}")
 
-if(CMAKE_BUILD_TYPE STREQUAL Testing OR CMAKE_BUILD_TYPE STREQUAL Debug)
- set(CVD_TESTING true)
-endif()
+if (CMAKE_BUILD_TYPE STREQUAL Testing OR CMAKE_BUILD_TYPE STREQUAL Debug)
+    set(CVD_TESTING true)
+endif ()
 # MSVC 2019 has std::filesystem, Apple as of Mojave does not so we must include Boost::filesystem, GCC also has it in a
 # differnet place and support is shaky in 7 so lets go boost there too.
 
 if (UNIX AND ("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Linux"))
- set(LINUX true)
-else()
- set(LINUX false)
-endif()
+    set(LINUX true)
+else ()
+    set(LINUX false)
+endif ()
 
 if (WIN32 AND CMAKE_SYSTEM_VERSION)
- set(CVDICE_CMAKE_FIND_PATHS ../stock/OpenCV/Win64/opencv/build/x64/vc15/lib ${CVDICE_FIND_PATHS})
- include_directories(SYSTEM ../stock/OpenCV/Win64/opencv/sources/3rdparty)
+    set(CVDICE_CMAKE_FIND_PATHS ../stock/OpenCV/Win64/opencv/build/x64/vc15/lib ${CVDICE_FIND_PATHS})
+    include_directories(SYSTEM ../stock/OpenCV/Win64/opencv/sources/3rdparty)
 elseif (APPLE)
- set(CVD_USE_BOOST_FS true)
- set(CVD_USE_HUNTER true)
-elseif(LINUX)
- set(CVD_USE_BOOST_FS true)
- set(CVD_USE_HUNTER true)
-endif()
+    set(CVD_USE_BOOST_FS true)
+    set(CVD_USE_HUNTER true)
+elseif (LINUX)
+    set(CVD_USE_BOOST_FS true)
+    set(CVD_USE_HUNTER true)
+endif ()
 
 
-if("${CVD_USE_HUNTER}")
- message(STATUS "Initializing Hunter.")
- include("cmake/HunterGate.cmake")
- HunterGate(
-         URL "https://github.com/ruslo/hunter/archive/v0.23.165.tar.gz"
-         SHA1 "5a73f91df5f6109c0bb1104d0c0ee423f7bece79"
- )
-endif()
+if ("${CVD_USE_HUNTER}")
+    message(STATUS "Initializing Hunter.")
+    include("cmake/HunterGate.cmake")
+    HunterGate(
+            URL "https://github.com/ruslo/hunter/archive/v0.23.165.tar.gz"
+            SHA1 "5a73f91df5f6109c0bb1104d0c0ee423f7bece79"
+    )
+endif ()
 
 project(CVDice)
 
-if("${CVD_USE_HUNTER}")
- if ("${CVD_USE_BOOST_FS}")
-  hunter_add_package(Boost COMPONENTS filesystem)
-  find_package(Boost CONFIG REQUIRED filesystem)
- endif()
+if ("${CVD_USE_HUNTER}")
+    if ("${CVD_USE_BOOST_FS}")
+        hunter_add_package(Boost COMPONENTS filesystem)
+        find_package(Boost CONFIG REQUIRED filesystem)
+    endif ()
 
- hunter_add_package(OpenCV COMPONENTS)
- find_package(OpenCV CONFIG REQUIRED)
-endif()
-
+    hunter_add_package(OpenCV COMPONENTS)
+    find_package(OpenCV CONFIG REQUIRED)
+endif ()
 
 
 # Find OpenCV, you may need to set OpenCV_DIR variable
@@ -79,43 +78,46 @@ add_executable(CVDice
         main.cpp
 
         dice/JpegFile.cpp dice/JpegFile.h
+        dice/transformers/XformerBase.cpp dice/transformers/XformerBase.h
+        dice/transformers/Thresholder.cpp dice/transformers/Thresholder.h
+        dice/transformers/Colorer.cpp dice/transformers/Colorer.h
         dice/utils/algorithm.h)
 
 add_executable(CVDiceAnnotator annotation/main.cpp annotation/VecByte.h annotation/Chunk.h annotation/Strings.h)
 
 add_library(LibCVDiceAnnotation
         annotation/JpegAnnotation.cpp annotation/JpegAnnotation.h
-)
+        )
 
 if (CVD_TESTING)
- set_target_properties(CVDice PROPERTIES
-         ENABLE_EXPORTS 1
-         OUTPUT_NAME CVDice_Testable
-         # Test placing exe import library in unique directory.
-         ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/exe
- )
-else()
- set_target_properties(CVDice PROPERTIES
-          OUTPUT_NAME CVDice
-          # Test placing exe import library in unique directory.
-          ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/exe
- )
-endif()
+    set_target_properties(CVDice PROPERTIES
+            ENABLE_EXPORTS 1
+            OUTPUT_NAME CVDice_Testable
+            # Test placing exe import library in unique directory.
+            ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/exe
+            )
+else ()
+    set_target_properties(CVDice PROPERTIES
+            OUTPUT_NAME CVDice
+            # Test placing exe import library in unique directory.
+            ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/exe
+            )
+endif ()
 
 target_link_libraries(CVDice LibCVDiceAnnotation)
 target_link_libraries(CVDiceAnnotator LibCVDiceAnnotation)
 target_link_libraries(LibCVDiceAnnotation PUBLIC ${OpenCV_LIBS})
 
 if ("${CVD_USE_BOOST_FS}")
- message(STATUS "Using boost::filesystem")
- target_compile_definitions(LibCVDiceAnnotation PUBLIC CVD_USE_BOOST_FS=1 BOOST_NO_AUTO_PTR)
- target_link_libraries(LibCVDiceAnnotation PUBLIC Boost::filesystem)
-else()
- message(STATUS "Using std::filesystem")
-endif()
+    message(STATUS "Using boost::filesystem")
+    target_compile_definitions(LibCVDiceAnnotation PUBLIC CVD_USE_BOOST_FS=1 BOOST_NO_AUTO_PTR)
+    target_link_libraries(LibCVDiceAnnotation PUBLIC Boost::filesystem)
+else ()
+    message(STATUS "Using std::filesystem")
+endif ()
 
 if (LINUX)
- target_compile_options(LibCVDiceAnnotation PUBLIC -std=c++17)
-endif()
+    target_compile_options(LibCVDiceAnnotation PUBLIC -std=c++17)
+endif ()
 
 add_subdirectory(tests)

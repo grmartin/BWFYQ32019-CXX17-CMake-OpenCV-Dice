@@ -12,7 +12,6 @@
 #ifndef CVDICE_JPEGFILE_H
 #define CVDICE_JPEGFILE_H
 
-
 namespace cvdice {
     class JpegFile {
     public:

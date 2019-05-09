@@ -14,6 +14,7 @@ TEST_CASE("cvdice::algorithm::for_each_i", "[utils]") {
             SHOULD_NOT_BE_CALLED();
         });
     }
+
     SECTION("2 Item Array") {
         std::vector<int> vect = {8, 19};
         for_each_i(vect.begin(), vect.end(), [](auto val, auto i){
@@ -25,6 +26,7 @@ TEST_CASE("cvdice::algorithm::for_each_i", "[utils]") {
             }
         });
     }
+
     SECTION("1 Item Array") {
         std::vector<int> vect = {2005};
         for_each_i(vect.begin(), vect.end(), [](auto val, auto i){
@@ -44,6 +46,7 @@ TEST_CASE("cvdice::algorithm::for_each_fl", "[utils]") {
             SHOULD_NOT_BE_CALLED();
         });
     }
+
     SECTION("1 Item Array") {
         std::vector<int> vect = {2005};
         for_each_fl(vect.begin(), vect.end(), [](auto val, auto fl){
@@ -54,6 +57,7 @@ TEST_CASE("cvdice::algorithm::for_each_fl", "[utils]") {
             }
         });
     }
+
     SECTION("2 Item Array") {
         std::vector<int> vect = {8, 19};
         for_each_fl(vect.begin(), vect.end(), [](auto val, auto fl){
@@ -65,6 +69,7 @@ TEST_CASE("cvdice::algorithm::for_each_fl", "[utils]") {
             }
         });
     }
+
     SECTION("3 Item Array") {
         std::vector<int> vect = {100, 50, 0};
         for_each_fl(vect.begin(), vect.end(), [](auto val, auto fl){
@@ -77,6 +82,7 @@ TEST_CASE("cvdice::algorithm::for_each_fl", "[utils]") {
             }
         });
     }
+
     SECTION("4 Item Array") {
         std::vector<int> vect = {1000, 12, 96, 127};
         for_each_fl(vect.begin(), vect.end(), [](auto val, auto fl){

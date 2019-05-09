@@ -27,6 +27,7 @@ TEST_CASE("jpeganno::util::chunk", "[templates]") {
             REQUIRE(out.empty());
         }
     }
+
     GIVEN("a 5 item integer vector.") {
         std::vector x = {1, 2, 3, 4, 5};
         WHEN("chunk size is 2 we expect 3 chunks with 2 of size 2 and then the remainder") {
@@ -53,4 +54,5 @@ TEST_CASE("jpeganno::util::chunk", "[templates]") {
         }
     }
 }
+
 #endif //CVDICE_CHUNK_TEST_H

@@ -24,7 +24,8 @@ RawByteVector jpegData;
 
 #define get1PxJpeg(x) ResourceReader::getInstance().getJpegMarkedBytes("OnePx.jpg", x)
 
-template <typename T> inline bool vectorHasSubvector(T vec, T sub) {
+template<typename T>
+inline bool vectorHasSubvector(T vec, T sub) {
     return std::search(vec.begin(), vec.end(), sub.begin(), sub.end()) != vec.end();
 }
 
@@ -33,7 +34,6 @@ TEST_CASE("jpeganno::JpegAnnotation", "[library]") {
     fs::path onepxstock_file_abspath;
     std::function<fs::path(std::string)> safeFileName;
     std::function<void(fs::path)> copyBlankJpeg;
-
 
     SETUP {
         if (!isSetup) {
@@ -336,7 +336,8 @@ TEST_CASE("jpeganno::JpegAnnotation", "[library]") {
             REQUIRE(vectorHasSubvector(expectedData, otherFFED));
             CAPTURE(workingImage);
 
-            jpeganno::JpegAnnotation::writeExpectedValues(workingImage.generic_string(), toEightBitVec(expected_values));
+            jpeganno::JpegAnnotation::writeExpectedValues(workingImage.generic_string(),
+                                                          toEightBitVec(expected_values));
 
             auto file_data_bytes_1 = read(workingImage.generic_string());
             REQUIRE(subsection_equality(file_data_bytes_1, expectedData));
