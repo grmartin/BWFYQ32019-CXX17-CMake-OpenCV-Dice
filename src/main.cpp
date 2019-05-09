@@ -10,9 +10,8 @@ using namespace cv;
 
 constexpr std::string_view primaryWindowName = "Experimentation Window"; // NOLINT(cert-err58-cpp)
 
-class Colorer {
-    int value = -1;
-
+class XformerBase {
+protected:
     Mat source_image;
     Mat display;
 
@@ -21,13 +20,44 @@ class Colorer {
 
     bool has_built_ui = false;
 
+    explicit XformerBase(const Mat &sourceImage) {
+        this->source_image = sourceImage.clone();
+    }
+
+    virtual void buildUi() = 0;
+
+    virtual void update(const Mat &updatedImage) {
+        if (!has_built_ui) {
+            has_built_ui = true;
+            buildUi();
+        }
+
+        this->display = updatedImage.clone();
+
+        if (chainTo) chainTo(updatedImage);
+        else imshow(window_name, updatedImage);
+    }
+
 public:
     std::function<void(Mat)> chainTo;
 
-    explicit Colorer(const Mat &sourceImage) {
+    void showFor(const std::string &windowName) {
+        this->window_name = windowName;
+    }
 
-        this->source_image = sourceImage.clone();
+    virtual void update() = 0;
 
+    virtual void chainAction(const Mat &mat) {
+        this->source_image = mat.clone();
+        update();
+    }
+};
+
+class Colorer : public XformerBase {
+    int value = 0;
+
+public:
+    explicit Colorer(const Mat &sourceImage) : XformerBase(sourceImage) {
         this->validValues = {
                 COLOR_BGR2BGRA, COLOR_BGRA2BGR, COLOR_BGR2RGBA, COLOR_RGBA2BGR, COLOR_BGR2RGB, COLOR_BGRA2RGBA,
                 COLOR_BGR2GRAY, COLOR_RGB2GRAY,
@@ -46,39 +76,28 @@ public:
         };
     }
 
-    void showFor(const std::string &windowName) {
-        this->window_name = windowName;
-    }
-
-    void update() {
-
-        auto selfUpdater = [](int pos, void *self) { reinterpret_cast<Colorer *>(self)->update(); };
-
-        if (!has_built_ui) {
-            has_built_ui = true;
-            createTrackbar("Color Value: ",
-                           window_name, &value,
-                           this->validValues.size() - 1, selfUpdater, reinterpret_cast<void *>(this));
-        }
-
+    void update() override {
         if (value >= 0) {
-            std::cout << "Color Conversion: " << this->validValues[value] << std::endl;
+            std::cout << "Color Conversion: [" << value << "]=" << this->validValues[value] << std::endl;
             try {
                 cv::cvtColor(source_image, display, this->validValues[value], 3);
             } catch (cv::Exception &ignored) { return; }
         }
-        Mat show = value == -1 ? source_image : display;
 
-        if (chainTo) {
-            chainTo(show);
-            return;
-        }
-
-        imshow(window_name, show);
+        XformerBase::update(display);
     }
+
+private:
+    void buildUi() override {
+        auto selfUpdater = [](int pos, void *self) { reinterpret_cast<Colorer *>(self)->update(); };
+        createTrackbar("Color Value: ",
+                       window_name, &value,
+                       this->validValues.size() - 1, selfUpdater, reinterpret_cast<void *>(this));
+    }
+
 };
 
-class Thresholder {
+class Thresholder : public XformerBase {
     int threshold_value = 0;
     int threshold_type = 3;
 
@@ -86,44 +105,26 @@ class Thresholder {
     int const max_type = 4;
     int const max_binary_value = 255;
 
-    Mat source_image;
-    Mat display;
+public:
+    explicit Thresholder(const Mat &sourceImage) : XformerBase(sourceImage) {}
 
-    std::string window_name;
-
-    bool has_built_ui = false;
+private:
+    void buildUi() override {
+        auto selfUpdater = [](int pos, void *self) { reinterpret_cast<Thresholder *>(self)->update(); };
+        createTrackbar("Thresh Type:",
+                       window_name, &threshold_type,
+                       max_type, selfUpdater, reinterpret_cast<void *>(this));
+        createTrackbar("Thresh Value: ",
+                       window_name, &threshold_value,
+                       max_value, selfUpdater, reinterpret_cast<void *>(this));
+    }
 
 public:
-    explicit Thresholder(const Mat &sourceImage) {
-        this->source_image = sourceImage.clone();
-    }
-
-    void chainAction(const Mat &mat) {
-        this->source_image = mat.clone();
-        update();
-    }
-
-    void showFor(const std::string &windowName) {
-        this->window_name = windowName;
-    }
-
-    void update() {
-
+    void update() override {
         std::cout << "Thresh Type: " << threshold_type << ", Value: " << threshold_value << std::endl;
-        auto selfUpdater = [](int pos, void *self) { reinterpret_cast<Thresholder *>(self)->update(); };
-
-        if (!has_built_ui) {
-            has_built_ui = true;
-            createTrackbar("Thresh Type:",
-                           window_name, &threshold_type,
-                           max_type, selfUpdater, reinterpret_cast<void *>(this));
-            createTrackbar("Thresh Value: ",
-                           window_name, &threshold_value,
-                           max_value, selfUpdater, reinterpret_cast<void *>(this));
-        }
 
         threshold(source_image, display, threshold_value, max_binary_value, threshold_type);
-        imshow(window_name, display);
+        XformerBase::update(display);
     }
 };
 
@@ -141,8 +142,8 @@ int main(int argc, char *argv[], char *envp[]) {
 
     cv::namedWindow(windowName, WINDOW_AUTOSIZE);
 
-    auto *colorer = new Colorer(file->matrix);
-    auto *thresholder = new Thresholder(file->matrix);
+    auto colorer = new Colorer(file->matrix);
+    auto thresholder = new Thresholder(file->matrix);
 
     colorer->showFor(windowName);
     thresholder->showFor(windowName);
