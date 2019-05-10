@@ -19,7 +19,7 @@ namespace cvdice::transformers {
     public:
         explicit Thresholder(const cv::Mat &sourceImage) : XformerBase(sourceImage) {}
 
-        void update() override;
+        void performUpdate() override;
 
     private:
         void buildUi() override;

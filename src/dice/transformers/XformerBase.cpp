@@ -29,3 +29,7 @@ void cvdice::transformers::XformerBase::chainAction(const cv::Mat &mat) {
     this->source_image = mat.clone();
     update();
 }
+
+void cvdice::transformers::XformerBase::update() {
+    if (enabled) performUpdate();
+}

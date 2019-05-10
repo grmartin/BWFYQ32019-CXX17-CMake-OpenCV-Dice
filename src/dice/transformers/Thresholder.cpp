@@ -21,7 +21,7 @@ void cvdice::transformers::Thresholder::buildUi() {
                        max_value, selfUpdater, reinterpret_cast<void *>(this));
 }
 
-void cvdice::transformers::Thresholder::update() {
+void cvdice::transformers::Thresholder::performUpdate() {
     std::cout << "Thresh Type: " << threshold_type << ", Value: " << threshold_value << std::endl;
 
     threshold(source_image, display, threshold_value, max_binary_value, threshold_type);

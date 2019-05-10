@@ -14,7 +14,7 @@ namespace cvdice::transformers {
     public:
         explicit Colorer(const cv::Mat &sourceImage);
 
-        void update() override;
+        void performUpdate() override;
 
     private:
         void buildUi() override;

@@ -28,8 +28,11 @@ namespace cvdice::transformers {
     public:
         std::function<void(cv::Mat)> chainTo;
         void showFor(const std::string &windowName);
-        virtual void update() = 0;
+        virtual void performUpdate() = 0;
+        virtual void update() final;
         virtual void chainAction(const cv::Mat &mat);
+
+        bool enabled = true;
     };
 }
 #endif //CVDICE_XFORMERBASE_H

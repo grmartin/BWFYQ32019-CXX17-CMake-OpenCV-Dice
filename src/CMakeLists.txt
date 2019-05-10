@@ -81,7 +81,7 @@ add_executable(CVDice
         dice/transformers/XformerBase.cpp dice/transformers/XformerBase.h
         dice/transformers/Thresholder.cpp dice/transformers/Thresholder.h
         dice/transformers/Colorer.cpp dice/transformers/Colorer.h
-        dice/utils/algorithm.h)
+        dice/utils/algorithm.h dice/transformers/Contouring.cpp dice/transformers/Contouring.h)
 
 add_executable(CVDiceAnnotator annotation/main.cpp annotation/VecByte.h annotation/Chunk.h annotation/Strings.h)
 

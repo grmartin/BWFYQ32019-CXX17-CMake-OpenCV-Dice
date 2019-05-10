@@ -2,15 +2,15 @@
 // Created by Glenn R. Martin on 2019-05-09.
 //
 
-#include "XformerBase.h"
-#include "../JpegFile.h"
-#include "../../annotation/JpegAnnotation.h"
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <utility>
+
+#include "XformerBase.h"
 #include "Colorer.h"
 
-
+#include "../JpegFile.h"
+#include "../../annotation/JpegAnnotation.h"
 
 cvdice::transformers::Colorer::Colorer(const cv::Mat &sourceImage) : XformerBase(sourceImage) {
     this->validValues = {
@@ -31,7 +31,7 @@ cvdice::transformers::Colorer::Colorer(const cv::Mat &sourceImage) : XformerBase
     };
 }
 
-void cvdice::transformers::Colorer::update() {
+void cvdice::transformers::Colorer::performUpdate() {
     if (value >= 0) {
         std::cout << "Color Conversion: [" << value << "]=" << this->validValues[value] << std::endl;
         try {
