@@ -23,7 +23,7 @@ void cvdice::transformers::Contouring::performUpdate() {
             Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
             drawContours(display, contours, i, color, 2, 8, hierarchy, 0, Point());
         }
-    } catch (std::exception e) {
+    } catch (std::exception &e) {
         XformerBase::update(source_image);
         return;
     }
@@ -31,6 +31,4 @@ void cvdice::transformers::Contouring::performUpdate() {
     XformerBase::update(display);
 }
 
-void cvdice::transformers::Contouring::buildUi() {
-
-}
+void cvdice::transformers::Contouring::buildUi() {}

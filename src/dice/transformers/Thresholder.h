@@ -5,7 +5,7 @@
 #ifndef CVDICE_THRESHOLDER_H
 #define CVDICE_THRESHOLDER_H
 
-#import "XformerBase.h"
+#import "bases/XformerBase.h"
 
 namespace cvdice::transformers {
     class Thresholder : public XformerBase {
@@ -24,6 +24,11 @@ namespace cvdice::transformers {
     private:
         void buildUi() override;
 
+#ifdef CVD_USE_QT5
+
+        void imageToolbarChanged(CVQTImageToolbar *toolbar, int value) override;
+
+#endif
     };
 }
 #endif //CVDICE_THRESHOLDER_H

@@ -4,7 +4,7 @@
 
 This is a first attempt at creating a simple (I hope) application with OpenCV across all major Desktop Platforms.
 
-This project uses CMake and Hunter for package management.
+This project uses CMake and Hunter for package management and QT5 as a GUI.
 
 Currently the plan is as follows (and subject to change):
 

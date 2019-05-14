@@ -5,7 +5,7 @@
 #ifndef CVDICE_CONTOURING_H
 #define CVDICE_CONTOURING_H
 
-#include "XformerBase.h"
+#include "bases/XformerBase.h"
 
 namespace cvdice::transformers {
     class Contouring : public XformerBase {

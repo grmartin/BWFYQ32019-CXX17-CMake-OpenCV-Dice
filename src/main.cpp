@@ -3,16 +3,21 @@
 
 #include <opencv2/opencv.hpp>
 
+#if CVD_USE_QT5
+#   include "dice/ui/QT5Main.h"
+#else
+#   include "dice/transformers/bases/XformerBase.h"
+#   include "dice/transformers/Colorer.h"
+#   include "dice/transformers/Thresholder.h"
+#   include "dice/transformers/Contouring.h"
+
+using namespace cvdice::transformers;
+#endif
+
 #include "annotation/JpegAnnotation.h"
 #include "dice/JpegFile.h"
-#include "dice/transformers/XformerBase.h"
-#include "dice/transformers/Colorer.h"
-#include "dice/transformers/Thresholder.h"
-#include "dice/transformers/Contouring.h"
 
 using namespace cv;
-using namespace cvdice::transformers;
-
 constexpr std::string_view primaryWindowName = "Experimentation Window"; // NOLINT(cert-err58-cpp)
 
 int main(int argc, char *argv[], char *envp[]) {
@@ -25,7 +30,10 @@ int main(int argc, char *argv[], char *envp[]) {
 
     std::cout << "Got: " << *file << std::endl;
 
-    cv::namedWindow(windowName, WINDOW_AUTOSIZE);
+#if CVD_USE_QT5
+    return cvdice::ui::QT5Main(argc, argv, envp, file);
+#else
+    cv::namedWindow(windowName, WINDOW_GUI_EXPANDED);
 
     auto colorer = new Colorer(file->matrix);
     auto thresholder = new Thresholder(file->matrix);
@@ -41,4 +49,5 @@ int main(int argc, char *argv[], char *envp[]) {
 
     waitKey(0);
     return 0;
+#endif
 }

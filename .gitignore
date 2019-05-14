@@ -282,3 +282,7 @@ Makefile
 .*
 /*.jpg
 /stock
+a.out
+CMakeCache.txt
+*.webloc
+CMakeFiles

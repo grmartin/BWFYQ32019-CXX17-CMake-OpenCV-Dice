@@ -2,13 +2,13 @@
 // Created by Glenn R. Martin on 2019-05-09.
 //
 
+#include "Colorer.h"
+
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <utility>
 
-#include "XformerBase.h"
-#include "Colorer.h"
-
+#include "bases/XformerBase.h"
 #include "../JpegFile.h"
 #include "../../annotation/JpegAnnotation.h"
 
@@ -43,8 +43,28 @@ void cvdice::transformers::Colorer::performUpdate() {
 }
 
 void cvdice::transformers::Colorer::buildUi() {
+#ifdef CVD_USE_QT5
+    if (this->appender == nullptr) return;
+    CVQTImageToolbar *toolbar = new CVQTImageToolbar("Color Value:", value, 0, this->validValues.size() - 1,
+                                                     this->enabled);
+    toolbar->setDelegate(this);
+    this->opaqueUiHandle = this->appender(toolbar);
+#else
     auto selfUpdater = [](int pos, void *self) { reinterpret_cast<Colorer *>(self)->update(); };
     cv::createTrackbar("Color Value: ",
                        window_name, &value,
                        this->validValues.size() - 1, selfUpdater, reinterpret_cast<void *>(this));
+#endif
+    this->has_built_ui = true;
 }
+
+#ifdef CVD_USE_QT5
+
+void cvdice::transformers::Colorer::imageToolbarChanged(CVQTImageToolbar *toolbar, int changedValue) {
+    if (changedValue == this->value) return;
+
+    this->value = changedValue;
+    this->update();
+}
+
+#endif

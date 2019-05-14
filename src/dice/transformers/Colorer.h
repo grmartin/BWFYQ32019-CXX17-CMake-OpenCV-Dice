@@ -5,7 +5,7 @@
 #ifndef CVDICE_COLORER_H
 #define CVDICE_COLORER_H
 
-#import "XformerBase.h"
+#import "bases/XformerBase.h"
 
 namespace cvdice::transformers {
     class Colorer : public XformerBase {
@@ -19,6 +19,11 @@ namespace cvdice::transformers {
     private:
         void buildUi() override;
 
+#ifdef CVD_USE_QT5
+
+        void imageToolbarChanged(CVQTImageToolbar *toolbar, int value) override;
+
+#endif
     };
 }
 
