@@ -13,29 +13,41 @@
 #include <QWidget>
 #include <QImage>
 #include <QPainter>
+#include <QPaintEvent>
+#include <QScrollArea>
+#include <QLabel>
 
 using namespace cv;
 
 namespace cvdice::ui::widgets {
 #   define BYTES_PER 3
 
-    class CVQTWidget : public QWidget {
+class CVQTWidget : public QScrollArea {
     Q_OBJECT
+
     private:
         QImage _img;
+        QLabel* _label;
         Mat _mat;
 
     protected:
-        void paintEvent(QPaintEvent * /*event*/) override {
+        void paintEvent(QPaintEvent * event) override {
             QPainter painter(this);
-            painter.drawImage(QPoint(0, 0), _img);
+            painter.drawImage(QPoint(0, 0), _img, event->rect(), Qt::AutoColor);
             painter.end();
         }
 
     public:
-        explicit CVQTWidget(QWidget *parent = nullptr) : QWidget(parent) {}
-        QSize sizeHint() const final { return _img.size(); }
-        QSize minimumSizeHint() const final { return sizeHint(); }
+        explicit CVQTWidget(QWidget *parent = nullptr) :
+            QScrollArea(parent),
+            _label(new QLabel) {
+            _label->setBackgroundRole(QPalette::Base);
+            _label->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+            _label->setScaledContents(true);
+
+            this->setBackgroundRole(QPalette::Dark);
+            this->setWidget(_label);
+        }
 
     public slots:
         void paintMatrix(const Mat &image) {
@@ -48,7 +60,8 @@ namespace cvdice::ui::widgets {
 
             _img = QImage(_mat.data, _mat.cols, _mat.rows, _mat.cols * BYTES_PER, QImage::Format_RGB888);
 
-            this->setFixedSize(image.cols, image.rows);
+            _label->setPixmap(QPixmap::fromImage(_img));
+            _label->adjustSize();
 
             repaint();
         }
