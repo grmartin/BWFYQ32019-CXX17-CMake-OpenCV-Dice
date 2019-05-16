@@ -37,3 +37,7 @@ QSize CVQTImageToolbar::sizeHint() const {
 QSize CVQTImageToolbar::minimumSizeHint() const {
     return ui->horizontalLayoutWidget->minimumSizeHint();
 }
+
+void CVQTImageToolbar::hideEnabled() {
+    ui->enabledCheckbox->setHidden(true);
+}

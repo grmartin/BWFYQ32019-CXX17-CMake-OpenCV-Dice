@@ -36,6 +36,11 @@ void cvdice::transformers::Xformer::chainAction(const cv::Mat &mat) {
 }
 
 void cvdice::transformers::Xformer::update() {
-    if (enabled) performUpdate();
+    if (enabled) {
+        performUpdate();
+    } else {
+        display = source_image;
+        update(display);
+    }
 }
 

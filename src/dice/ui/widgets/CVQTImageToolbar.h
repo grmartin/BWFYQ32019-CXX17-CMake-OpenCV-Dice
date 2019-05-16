@@ -26,6 +26,7 @@ protected:
     CVQTImageToolbarDelegate* _delegate;
 
 public:
+
     explicit CVQTImageToolbar(const std::string& name, int curr, int min = 0, int max = 100, bool enabled = true);
     ~CVQTImageToolbar() override;
 
@@ -36,6 +37,8 @@ public:
     void setDelegate(CVQTImageToolbarDelegate* dele) {
         this->_delegate = dele;
     }
+
+    void hideEnabled();
 
 private slots:
     #pragma clang diagnostic push

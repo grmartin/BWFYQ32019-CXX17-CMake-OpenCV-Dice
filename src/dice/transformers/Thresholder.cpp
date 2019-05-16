@@ -13,8 +13,8 @@
 #include "../../annotation/JpegAnnotation.h"
 
 #ifdef CVD_USE_QT5
-QString ThreshTypeName = QString::fromLocal8Bit("Thresh Type");
-QString ThreshValueName = QString::fromLocal8Bit("Thresh Value");
+static QString ThreshTypeName = QString::fromLocal8Bit("Thresh Type");
+static QString ThreshValueName = QString::fromLocal8Bit("Thresh Value");
 #endif
 
 void cvdice::transformers::Thresholder::buildUi() {
@@ -22,6 +22,8 @@ void cvdice::transformers::Thresholder::buildUi() {
     if (this->appender == nullptr) return;
     CVQTImageToolbar *toolbar1 = new CVQTImageToolbar("Thresh Type:", threshold_type, 0, max_type, this->enabled);
     CVQTImageToolbar *toolbar2 = new CVQTImageToolbar("Thresh Value:", threshold_value, 0, max_value, this->enabled);
+
+    toolbar2->hideEnabled();
 
     toolbar1->setObjectName(ThreshTypeName);
     toolbar2->setObjectName(ThreshValueName);

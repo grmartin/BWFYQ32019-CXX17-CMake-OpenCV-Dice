@@ -10,6 +10,7 @@
 #   include "dice/transformers/Colorer.h"
 #   include "dice/transformers/Thresholder.h"
 #   include "dice/transformers/Contouring.h"
+#   include "dice/transformers/Edger.h"
 
 using namespace cvdice::transformers;
 #endif
@@ -37,14 +38,18 @@ int main(int argc, char *argv[], char *envp[]) {
 
     auto colorer = new Colorer(file->matrix);
     auto thresholder = new Thresholder(file->matrix);
+    auto edger = new Edger(file->matrix);
     auto contouring = new Contouring(file->matrix);
 
     colorer->showFor(windowName);
     thresholder->showFor(windowName);
     contouring->showFor(windowName);
+    edger->showFor(windowName);
 
     CHAIN_XFORMER(colorer, thresholder);
-    CHAIN_XFORMER(thresholder, contouring);
+    CHAIN_XFORMER(thresholder, edger);
+    CHAIN_XFORMER(edger, contouring);
+
     colorer->update();
 
     waitKey(0);

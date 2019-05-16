@@ -20,9 +20,7 @@ namespace cvdice::transformers {
         void buildUi() override;
 
 #ifdef CVD_USE_QT5
-
         void imageToolbarChanged(CVQTImageToolbar *toolbar, int value) override;
-
 #endif
     };
 }

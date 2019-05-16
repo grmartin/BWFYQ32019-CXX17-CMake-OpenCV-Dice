@@ -12,6 +12,7 @@
 #include "../transformers/Colorer.h"
 #include "../transformers/Thresholder.h"
 #include "../transformers/Contouring.h"
+#include "../transformers/Edger.h"
 
 int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *jpeg) {
     QApplication app(argc, argv);
@@ -24,6 +25,7 @@ int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *
 
     auto colorer = new transformers::Colorer(jpeg->matrix);
     auto thresholder = new transformers::Thresholder(jpeg->matrix);
+    auto edger = new transformers::Edger(jpeg->matrix);
     auto contouring = new transformers::Contouring(jpeg->matrix);
 
     auto uiAppendToolbarFn = [&mainWindow](CVQTImageToolbar *toolbar) {
@@ -33,10 +35,12 @@ int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *
 
     colorer->showFor(mainWindowPtr, uiAppendToolbarFn);
     thresholder->showFor(mainWindowPtr, uiAppendToolbarFn);
+    edger->showFor(mainWindowPtr, uiAppendToolbarFn);
     contouring->showFor(mainWindowPtr, uiAppendToolbarFn);
 
     CHAIN_XFORMER(colorer, thresholder);
-    CHAIN_XFORMER(thresholder, contouring);
+    CHAIN_XFORMER(thresholder, edger);
+    CHAIN_XFORMER(edger, contouring);
 
     colorer->update();
 

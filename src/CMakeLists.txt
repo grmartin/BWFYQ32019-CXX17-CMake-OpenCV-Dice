@@ -189,12 +189,15 @@ add_executable(CVDice
 
         dice/transformers/bases/XformerBase.h dice/transformers/bases/Xformer.h dice/transformers/bases/Xformer.cpp
 
+        dice/utils/algorithm.h
+
         dice/transformers/Thresholder.cpp dice/transformers/Thresholder.h
         dice/transformers/Colorer.cpp dice/transformers/Colorer.h
-        dice/utils/algorithm.h dice/transformers/Contouring.cpp dice/transformers/Contouring.h
+        dice/transformers/Edger.cpp dice/transformers/Edger.h
+        dice/transformers/Contouring.cpp dice/transformers/Contouring.h
 
         ${CVDice_Sources_QT5}
-        )
+       )
 
 add_executable(CVDiceAnnotator annotation/main.cpp annotation/VecByte.h annotation/Chunk.h annotation/Strings.h)
 
