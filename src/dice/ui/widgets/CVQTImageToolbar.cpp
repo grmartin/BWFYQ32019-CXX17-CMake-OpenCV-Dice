@@ -39,5 +39,8 @@ QSize CVQTImageToolbar::minimumSizeHint() const {
 }
 
 void CVQTImageToolbar::hideEnabled() {
+    QSizePolicy szPol = ui->enabledCheckbox->sizePolicy();
+    szPol.setRetainSizeWhenHidden(true);
+    ui->enabledCheckbox->setSizePolicy(szPol);
     ui->enabledCheckbox->setHidden(true);
 }
