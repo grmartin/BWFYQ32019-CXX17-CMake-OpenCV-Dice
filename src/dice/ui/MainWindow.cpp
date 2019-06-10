@@ -1,4 +1,5 @@
 #include "MainWindow.h"
+#include "MainWindowListColDelegate.h"
 #include "ui_mainwindow.h"
 
 #include <QScreen>
@@ -10,6 +11,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     resize(QGuiApplication::primaryScreen()->availableSize() * 3 / 5);
+
+    ui->toolbarList->setItemDelegateForColumn(0, new MainWindowListColDelegate(this));
 }
 
 MainWindow::~MainWindow() {

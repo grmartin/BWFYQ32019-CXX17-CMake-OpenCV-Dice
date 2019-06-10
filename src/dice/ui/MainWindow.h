@@ -15,7 +15,7 @@ namespace Ui {
 class MainWindow : public QMainWindow {
 Q_OBJECT
 
-private:
+protected:
     Ui::MainWindow *ui;
 
 public:
@@ -27,6 +27,7 @@ public:
 
     void updateMatrix(const cv::Mat &matrix);
 
+    friend class MainWindowListColDelegate;
 };
 
 #endif // MAINWINDOW_H

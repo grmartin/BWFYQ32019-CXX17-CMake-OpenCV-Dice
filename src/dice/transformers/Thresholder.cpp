@@ -13,6 +13,8 @@
 #include "../../annotation/JpegAnnotation.h"
 
 #ifdef CVD_USE_QT5
+#include "../ui/CVQTTag.h"
+
 static QString ThreshTypeName = QString::fromLocal8Bit("Thresh Type");
 static QString ThreshValueName = QString::fromLocal8Bit("Thresh Value");
 #endif
@@ -25,8 +27,8 @@ void cvdice::transformers::Thresholder::buildUi() {
 
     toolbar2->hideEnabled();
 
-    toolbar1->setObjectName(ThreshTypeName);
-    toolbar2->setObjectName(ThreshValueName);
+    setInternalContextName(toolbar1, ThreshTypeName);
+    setInternalContextName(toolbar2, ThreshValueName);
 
     toolbar1->setDelegate(this);
     toolbar2->setDelegate(this);
@@ -34,14 +36,6 @@ void cvdice::transformers::Thresholder::buildUi() {
     auto pairs =
         std::make_tuple(this->appender(toolbar1), this->appender(toolbar2));
     this->opaqueUiHandle = &pairs;
-#else
-    auto selfUpdater = [](int pos, void *self) { reinterpret_cast<Thresholder *>(self)->update(); };
-    cv::createTrackbar("Thresh Type:",
-                       window_name, &threshold_type,
-                       max_type, selfUpdater, reinterpret_cast<void *>(this));
-    cv::createTrackbar("Thresh Value: ",
-                       window_name, &threshold_value,
-                       max_value, selfUpdater, reinterpret_cast<void *>(this));
 #endif
 }
 
@@ -55,10 +49,10 @@ void cvdice::transformers::Thresholder::performUpdate() {
 #ifdef CVD_USE_QT5
 
 void cvdice::transformers::Thresholder::imageToolbarChanged(CVQTImageToolbar *toolbar, int changedValue) {
-    if (toolbar->objectName() == ThreshTypeName) {
+    if (getInternalContextName(toolbar) == ThreshTypeName) {
         if (changedValue == threshold_type) return;
         threshold_type = changedValue;
-    } else if (toolbar->objectName() == ThreshValueName) {
+    } else if (getInternalContextName(toolbar) == ThreshValueName) {
         if (changedValue == threshold_value) return;
         threshold_value = changedValue;
     }

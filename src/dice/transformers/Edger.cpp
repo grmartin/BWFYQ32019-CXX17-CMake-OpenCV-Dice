@@ -13,6 +13,8 @@
 #include "../../annotation/JpegAnnotation.h"
 
 #ifdef CVD_USE_QT5
+#include "../ui/CVQTTag.h"
+
 static QString KernSzName = QString::fromLocal8Bit("KernSz");
 static QString ThreshValueName = QString::fromLocal8Bit("Thresh Value");
 static QString RatioName = QString::fromLocal8Bit("Ratio");
@@ -28,9 +30,9 @@ void cvdice::transformers::Edger::buildUi() {
     toolbar2->hideEnabled();
     toolbar3->hideEnabled();
 
-    toolbar1->setObjectName(KernSzName);
-    toolbar2->setObjectName(ThreshValueName);
-    toolbar3->setObjectName(RatioName);
+    setInternalContextName(toolbar1, KernSzName);
+    setInternalContextName(toolbar2, ThreshValueName);
+    setInternalContextName(toolbar3, RatioName);
 
     toolbar1->setDelegate(this);
     toolbar2->setDelegate(this);
@@ -39,17 +41,6 @@ void cvdice::transformers::Edger::buildUi() {
     auto pairs =
         std::make_tuple(this->appender(toolbar1), this->appender(toolbar2), this->appender(toolbar3));
     this->opaqueUiHandle = &pairs;
-#else
-    auto selfUpdater = [](int pos, void *self) { reinterpret_cast<Edger *>(self)->update(); };
-    cv::createTrackbar("Canny Kern:",
-                       window_name, &kernel_size,
-                       2, selfUpdater, reinterpret_cast<void *>(this));
-    cv::createTrackbar("Canny Thresh Value: ",
-                       window_name, &threshold_value,
-                       max_threshold, selfUpdater, reinterpret_cast<void *>(this));
-    cv::createTrackbar("Canny Ratio: ",
-                       window_name, &ratio,
-                       max_ratio, selfUpdater, reinterpret_cast<void *>(this));
 #endif
 }
 
@@ -71,13 +62,13 @@ void cvdice::transformers::Edger::performUpdate() {
 #ifdef CVD_USE_QT5
 
 void cvdice::transformers::Edger::imageToolbarChanged(CVQTImageToolbar *toolbar, int changedValue) {
-    if (toolbar->objectName() == KernSzName) {
+    if (getInternalContextName(toolbar) == KernSzName) {
         if (changedValue == kernel_size) return;
         kernel_size = changedValue;
-    } else if (toolbar->objectName() == ThreshValueName) {
+    } else if (getInternalContextName(toolbar) == ThreshValueName) {
         if (changedValue == threshold_value) return;
         threshold_value = changedValue;
-    } else if (toolbar->objectName() == RatioName) {
+    } else if (getInternalContextName(toolbar) == RatioName) {
         if (changedValue == ratio) return;
         ratio = changedValue;
     }

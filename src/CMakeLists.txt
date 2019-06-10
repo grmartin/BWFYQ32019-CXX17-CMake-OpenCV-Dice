@@ -107,6 +107,7 @@ if ("${CVD_USE_QT5}") # https://doc.qt.io/qt-5/cmake-manual.html
     endif ()
 
     message(STATUS "    QT5::Core Version: ${Qt5Core_VERSION}")
+    message(STATUS "    QT5::Core Version: ${Qt5Core_VERSION}")
     message(STATUS "    QT5::Gui Version: ${Qt5Gui_VERSION}")
     message(STATUS "    QT5::OpenGL Version: ${Qt5OpenGL_VERSION}")
 
@@ -117,14 +118,14 @@ if ("${CVD_USE_QT5}") # https://doc.qt.io/qt-5/cmake-manual.html
         find_package(Qt5PrintSupport REQUIRED)
         message(STATUS "    QT5::PrintSupport Version: ${Qt5PrintSupport_VERSION} [macOS Only]")
 
-        message(STATUS ${CVD_USE_QT5_VER_FOOTER_MSG})
-
         # Sometimes this is missing on macOS, this typically means an old OS or QT Version.
         if (NOT TARGET Qt5::Widgets)
             message(FATAL_ERROR "*** No Qt5::Widgets target ***")
         else ()
             message(STATUS "    Qt5::Widgets Target: Found [macOS Only]")
         endif ()
+
+        message(STATUS ${CVD_USE_QT5_VER_FOOTER_MSG})
 
         # Modern QT requires Security.framework to detect/handle Sandboxing, so lets link to that too.
         find_library(SECURITY_FRAMEWORK Security)
@@ -197,7 +198,7 @@ add_executable(CVDice
         dice/transformers/Contouring.cpp dice/transformers/Contouring.h
 
         ${CVDice_Sources_QT5}
-       )
+        dice/ui/MainWindowListColDelegate.h dice/ui/CVQTTag.h)
 
 add_executable(CVDiceAnnotator annotation/main.cpp annotation/VecByte.h annotation/Chunk.h annotation/Strings.h)
 

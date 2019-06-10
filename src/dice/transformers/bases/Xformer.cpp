@@ -31,6 +31,7 @@ void cvdice::transformers::Xformer::showFor(const std::string &windowName) {
 }
 
 void cvdice::transformers::Xformer::chainAction(const cv::Mat &mat) {
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
     this->source_image = mat.clone();
     update();
 }
@@ -39,7 +40,7 @@ void cvdice::transformers::Xformer::update() {
     if (enabled) {
         performUpdate();
     } else {
-        display = source_image;
+        display = source_image.clone();
         update(display);
     }
 }
