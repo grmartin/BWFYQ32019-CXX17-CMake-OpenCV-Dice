@@ -52,9 +52,11 @@ void cvdice::transformers::Thresholder::imageToolbarChanged(CVQTImageToolbar *to
     if (getInternalContextName(toolbar) == ThreshTypeName) {
         if (changedValue == threshold_type) return;
         threshold_type = changedValue;
+        toolbar->setValueLabel(QString::number(changedValue));
     } else if (getInternalContextName(toolbar) == ThreshValueName) {
         if (changedValue == threshold_value) return;
         threshold_value = changedValue;
+        toolbar->setValueLabel(QString::number(changedValue));
     }
 
     this->update();

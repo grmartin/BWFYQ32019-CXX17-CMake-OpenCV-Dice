@@ -38,6 +38,8 @@ public:
         this->_delegate = dele;
     }
 
+    void setValueLabel(const QString& string);
+
     void hideEnabled();
 
 private slots:

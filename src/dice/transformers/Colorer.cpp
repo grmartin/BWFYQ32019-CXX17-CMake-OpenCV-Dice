@@ -59,6 +59,7 @@ void cvdice::transformers::Colorer::imageToolbarChanged(CVQTImageToolbar *toolba
     if (changedValue == this->value) return;
 
     this->value = changedValue;
+    toolbar->setValueLabel(QString::number(changedValue));
     this->update();
 }
 

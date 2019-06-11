@@ -15,7 +15,7 @@ CVQTImageToolbar::CVQTImageToolbar(const std::string &name, int curr, int min, i
     ui->enabledCheckbox->setTristate(false);
     ui->enabledCheckbox->setChecked(enabled ? Qt::Checked : Qt::Unchecked);
     ui->nameLabel->setText(QString::fromStdString(name));
-    ui->valueLabel->setText("");
+    setValueLabel(QString::number(curr));
 }
 
 CVQTImageToolbar::~CVQTImageToolbar() {
@@ -43,4 +43,8 @@ void CVQTImageToolbar::hideEnabled() {
     szPol.setRetainSizeWhenHidden(true);
     ui->enabledCheckbox->setSizePolicy(szPol);
     ui->enabledCheckbox->setHidden(true);
+}
+
+void CVQTImageToolbar::setValueLabel(const QString& string) {
+    ui->valueLabel->setText(string);
 }

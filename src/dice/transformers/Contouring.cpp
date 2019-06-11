@@ -63,9 +63,11 @@ void cvdice::transformers::Contouring::imageToolbarChanged(CVQTImageToolbar *too
     if (getInternalContextName(toolbar) == RetrievalModeName) {
         if (changedValue == retr) return;
         retr = changedValue;
+        toolbar->setValueLabel(QString::number(changedValue));
     } else if (getInternalContextName(toolbar) == ApproxModeName) {
         if (changedValue == approx) return;
         approx = changedValue;
+        toolbar->setValueLabel(QString::number(changedValue));
     }
 
     this->update();

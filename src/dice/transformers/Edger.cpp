@@ -65,12 +65,15 @@ void cvdice::transformers::Edger::imageToolbarChanged(CVQTImageToolbar *toolbar,
     if (getInternalContextName(toolbar) == KernSzName) {
         if (changedValue == kernel_size) return;
         kernel_size = changedValue;
+        toolbar->setValueLabel(QString::number(changedValue));
     } else if (getInternalContextName(toolbar) == ThreshValueName) {
         if (changedValue == threshold_value) return;
         threshold_value = changedValue;
+        toolbar->setValueLabel(QString::number(changedValue));
     } else if (getInternalContextName(toolbar) == RatioName) {
         if (changedValue == ratio) return;
         ratio = changedValue;
+        toolbar->setValueLabel(QString::number(changedValue));
     }
 
     this->update();
