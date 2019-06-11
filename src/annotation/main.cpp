@@ -18,6 +18,7 @@ int processArguments(std::vector<std::string> arguments);
 void printHelp();
 int getFromJpeg(std::vector<std::string> arguments);
 int setInJpeg(std::vector<std::string> arguments);
+int copyFromJpegToJpeg(std::vector<std::string> arguments);
 
 typedef struct {
     std::string switchName;
@@ -28,7 +29,8 @@ typedef struct {
 const std::vector<callTable> getCalls() {
     static const std::vector<callTable> calls = {
         {"get", getFromJpeg},
-        {"set", setInJpeg}
+        {"set", setInJpeg},
+        {"copy", copyFromJpegToJpeg}
     };
 
     return calls;
@@ -113,3 +115,19 @@ int setInJpeg(std::vector<std::string> arguments) {
 
     return EXIT_SUCCESS;
 }
+
+int copyFromJpegToJpeg(std::vector<std::string> arguments) {
+    auto const fileName1 = arguments.at(0);
+    auto const fileName2 = arguments.at(1);
+
+    auto values = JpegAnnotation::parseExpectedValues(fileName1);
+
+    if (values.empty()) {
+        return EXIT_SUCCESS;
+    }
+
+    JpegAnnotation::writeExpectedValues(fileName2, values);
+
+    return EXIT_SUCCESS;
+}
+
