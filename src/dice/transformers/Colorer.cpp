@@ -12,7 +12,7 @@
 #include "../JpegFile.h"
 #include "../../annotation/JpegAnnotation.h"
 
-cvdice::transformers::Colorer::Colorer(const cv::Mat &sourceImage) : XformerBase(sourceImage) {
+cvdice::transformers::Colorer::Colorer(const cv::Mat &sourceImage, int value) : XformerBase(sourceImage) {
     this->validValues = {
         //cv::COLOR_BGR2BGRA, cv::COLOR_BGRA2BGR, cv::COLOR_BGR2RGBA, cv::COLOR_RGBA2BGR, cv::COLOR_BGR2RGB, cv::COLOR_BGRA2RGBA,
         cv::COLOR_BGR2GRAY, cv::COLOR_RGB2GRAY,
@@ -29,13 +29,14 @@ cvdice::transformers::Colorer::Colorer(const cv::Mat &sourceImage) : XformerBase
 //        cv::COLOR_Lab2LBGR, cv::COLOR_Lab2LRGB, cv::COLOR_Luv2LBGR, cv::COLOR_Luv2LRGB,
 //        cv::COLOR_BGR2YUV, cv::COLOR_RGB2YUV, cv::COLOR_YUV2BGR, cv::COLOR_YUV2RGB,
     };
+    this->value = value;
 }
 
 void cvdice::transformers::Colorer::performUpdate() {
     if (value >= 0) {
         std::cout << "Color Conversion: [" << value << "]=" << this->validValues[value] << std::endl;
         try {
-            cv::cvtColor(source_image, display, this->validValues[value], 3);
+            cv::cvtColor(source_image.clone(), display, this->validValues[value], 3);
         } catch (cv::Exception &ignored) { return; }
     }
 

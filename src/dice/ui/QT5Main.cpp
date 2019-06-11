@@ -23,15 +23,17 @@ int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *
 
     mainWindow.show();
 
-    auto colorer = new transformers::Colorer(jpeg->matrix);
-    auto thresholder = new transformers::Thresholder(jpeg->matrix);
+    auto colorer = new transformers::Colorer(jpeg->matrix, 1);
+    auto thresholder = new transformers::Thresholder(jpeg->matrix, 3, 218);
     auto edger = new transformers::Edger(jpeg->matrix);
-    auto contouring = new transformers::Contouring(jpeg->matrix);
+    auto contouring = new transformers::Contouring(jpeg->matrix, 1, 2);
 
     auto uiAppendToolbarFn = [&mainWindow](CVQTImageToolbar *toolbar) {
         QString name = toolbar->objectName();
         return mainWindow.addToolbar(toolbar, &name);
     };
+
+    edger->enabled = false;
 
     colorer->showFor(mainWindowPtr, uiAppendToolbarFn);
     thresholder->showFor(mainWindowPtr, uiAppendToolbarFn);

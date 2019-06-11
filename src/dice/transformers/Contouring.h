@@ -40,13 +40,16 @@
 
 namespace cvdice::transformers {
     class Contouring : public XformerBase {
-        int retr;
-        int approx;
+        int retr = 0;
+        int approx = 0;
         int max_retr = 4;
         int max_approx = 3; // x = (y+1)
 
     public:
-        explicit Contouring(const cv::Mat &sourceImage) : XformerBase(sourceImage) {}
+        explicit Contouring(const cv::Mat &sourceImage, int retr = 0, int approx = 0) : XformerBase(sourceImage) {
+            this->retr = retr;
+            this->approx = approx;
+        }
 
         void performUpdate() override;
 

@@ -38,15 +38,23 @@ void cvdice::transformers::Contouring::buildUi() {
 
 void cvdice::transformers::Contouring::performUpdate() {
     try {
+
+        // make source colorful.
+
+        cv::Mat colorImage;
+
+        cv::cvtColor(source_image, colorImage, cv::COLOR_GRAY2RGB, 3);
+
         RNG rng(12345);
         vector<vector<Point>> contours;
         vector<Vec4i> hierarchy;
 
-        findContours(source_image, contours, hierarchy, retr, approx+1, cv::Point(0, 0));
+        findContours(source_image.clone(), contours, hierarchy, retr, approx+1, cv::Point(0, 0));
 
-        /// Draw contours
-        Mat drawing = Mat::zeros(source_image.size(), CV_8UC3);
+        colorImage.copyTo(display);
+
         for (int i = 0; i < contours.size(); i++) {
+            int colorI = i * 3;
             Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
             drawContours(display, contours, i, color, 2, 8, hierarchy, 0, Point());
         }

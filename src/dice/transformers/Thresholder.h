@@ -9,15 +9,18 @@
 
 namespace cvdice::transformers {
     class Thresholder : public XformerBase {
-        int threshold_value = 0;
-        int threshold_type = 3;
+        int type = 3;
+        int value = 0;
 
-        int const max_value = 255;
         int const max_type = 4;
+        int const max_value = 255;
         int const max_binary_value = 255;
 
     public:
-        explicit Thresholder(const cv::Mat &sourceImage) : XformerBase(sourceImage) {}
+        explicit Thresholder(const cv::Mat &sourceImage, int type = 3, int value = 0) : XformerBase(sourceImage) {
+            this->value = value;
+            this->type = type;
+        }
 
         void performUpdate() override;
 

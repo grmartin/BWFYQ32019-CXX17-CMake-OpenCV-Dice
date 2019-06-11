@@ -12,7 +12,7 @@ namespace cvdice::transformers {
         int value = 0;
 
     public:
-        explicit Colorer(const cv::Mat &sourceImage);
+        explicit Colorer(const cv::Mat &sourceImage, int value = 0);
 
         void performUpdate() override;
 

@@ -18,7 +18,7 @@ void cvdice::transformers::Xformer::update(const cv::Mat &updatedImage) {
 
     this->display = updatedImage.clone();
 
-    if (chainTo) chainTo(updatedImage);
+    if (chainTo) chainTo(updatedImage.clone());
     else updateWindow(updatedImage);
 }
 

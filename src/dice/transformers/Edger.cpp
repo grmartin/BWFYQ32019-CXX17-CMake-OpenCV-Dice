@@ -47,7 +47,7 @@ void cvdice::transformers::Edger::buildUi() {
 void cvdice::transformers::Edger::performUpdate() {
     try {
         cv::Mat blurry, detected_edges;
-        blur(source_image, blurry, cv::Size(3, 3));
+        blur(source_image.clone(), blurry, cv::Size(3, 3));
         Canny(blurry, detected_edges, threshold_value, threshold_value * ratio, calcKern(kernel_size));
         display = cv::Scalar::all(0);
         source_image.copyTo(display, detected_edges);

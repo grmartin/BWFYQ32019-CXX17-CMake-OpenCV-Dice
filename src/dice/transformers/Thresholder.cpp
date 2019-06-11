@@ -22,8 +22,8 @@ static QString ThreshValueName = QString::fromLocal8Bit("Thresh Value");
 void cvdice::transformers::Thresholder::buildUi() {
 #ifdef CVD_USE_QT5
     if (this->appender == nullptr) return;
-    CVQTImageToolbar *toolbar1 = new CVQTImageToolbar("Thresh Type:", threshold_type, 0, max_type, this->enabled);
-    CVQTImageToolbar *toolbar2 = new CVQTImageToolbar("Thresh Value:", threshold_value, 0, max_value, this->enabled);
+    CVQTImageToolbar *toolbar1 = new CVQTImageToolbar("Thresh Type:", type, 0, max_type, this->enabled);
+    CVQTImageToolbar *toolbar2 = new CVQTImageToolbar("Thresh Value:", value, 0, max_value, this->enabled);
 
     toolbar2->hideEnabled();
 
@@ -40,9 +40,9 @@ void cvdice::transformers::Thresholder::buildUi() {
 }
 
 void cvdice::transformers::Thresholder::performUpdate() {
-    std::cout << "Thresh Type: " << threshold_type << ", Value: " << threshold_value << std::endl;
+    std::cout << "Thresh Type: " << type << ", Value: " << value << std::endl;
 
-    threshold(source_image, display, threshold_value, max_binary_value, threshold_type);
+    threshold(source_image.clone(), display, value, max_binary_value, type);
     XformerBase::update(display);
 }
 
@@ -50,12 +50,12 @@ void cvdice::transformers::Thresholder::performUpdate() {
 
 void cvdice::transformers::Thresholder::imageToolbarChanged(CVQTImageToolbar *toolbar, int changedValue) {
     if (getInternalContextName(toolbar) == ThreshTypeName) {
-        if (changedValue == threshold_type) return;
-        threshold_type = changedValue;
+        if (changedValue == type) return;
+        type = changedValue;
         toolbar->setValueLabel(QString::number(changedValue));
     } else if (getInternalContextName(toolbar) == ThreshValueName) {
-        if (changedValue == threshold_value) return;
-        threshold_value = changedValue;
+        if (changedValue == value) return;
+        value = changedValue;
         toolbar->setValueLabel(QString::number(changedValue));
     }
 
