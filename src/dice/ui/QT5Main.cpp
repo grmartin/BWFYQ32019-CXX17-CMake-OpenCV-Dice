@@ -7,6 +7,7 @@
 
 #include <QApplication>
 #include <dice/JpegFile.h>
+#include <opencv2/imgproc.hpp>
 
 #include "dice/transformers/bases/XformerBase.h"
 #include "../transformers/Colorer.h"
@@ -26,7 +27,7 @@ int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *
     auto colorer = new transformers::Colorer(jpeg->matrix, 1);
     auto thresholder = new transformers::Thresholder(jpeg->matrix, 3, 218);
     auto edger = new transformers::Edger(jpeg->matrix);
-    auto contouring = new transformers::Contouring(jpeg->matrix, 1, 2);
+    auto contouring = new transformers::Contouring(jpeg->matrix, cv::RetrievalModes::RETR_CCOMP, 2);
 
     auto uiAppendToolbarFn = [&mainWindow](CVQTImageToolbar *toolbar) {
         QString name = toolbar->objectName();

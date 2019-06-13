@@ -5,6 +5,7 @@
 #include "Contouring.h"
 
 #include <opencv2/opencv.hpp>
+#include "../utils/hsv.h"
 
 using namespace cv;
 using namespace std;
@@ -15,6 +16,11 @@ using namespace std;
 static QString RetrievalModeName = QString::fromLocal8Bit("Retr");
 static QString ApproxModeName = QString::fromLocal8Bit("Approx");
 #endif
+
+constexpr unsigned int HIER_NEXT = 0;
+constexpr unsigned int HIER_PREV = 1;
+constexpr unsigned int HIER_1ST_CH = 2;
+constexpr unsigned int HIER_PARENT = 3;
 
 void cvdice::transformers::Contouring::buildUi() {
 #ifdef CVD_USE_QT5
@@ -38,9 +44,6 @@ void cvdice::transformers::Contouring::buildUi() {
 
 void cvdice::transformers::Contouring::performUpdate() {
     try {
-
-        // make source colorful.
-
         cv::Mat colorImage;
 
         cv::cvtColor(source_image, colorImage, cv::COLOR_GRAY2RGB, 3);
@@ -53,9 +56,19 @@ void cvdice::transformers::Contouring::performUpdate() {
 
         colorImage.copyTo(display);
 
+        std::function<int(int, int)> findDepth = [hierarchy, &findDepth](int idx, int depth) {
+            auto curr = hierarchy[idx];
+
+            if (curr[HIER_PARENT] == -1) return depth;
+
+            return findDepth(curr[HIER_PARENT], depth+1);
+        };
+
         for (int i = 0; i < contours.size(); i++) {
-            int colorI = i * 3;
-            Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+            // printf("{\"i\": %d, \"next\": %d, \"prev\": %d, \"1stc\": %d, \"pare\": %d},\n", i, hierarchy[i].val[Next], hierarchy[i].val[Previous], hierarchy[i].val[FirstChild], hierarchy[i].val[Parent]);
+            auto rgb = cvdice::hsv::hsvToRgb(findDepth(i, 0)*90, 100, 100);
+
+            Scalar color = Scalar(rgb.r, rgb.g, rgb.b);
             drawContours(display, contours, i, color, 2, 8, hierarchy, 0, Point());
         }
     } catch (std::exception &e) {

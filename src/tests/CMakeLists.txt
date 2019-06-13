@@ -20,7 +20,7 @@ if (CVD_TESTING)
             LibCVDiceAnnotation/Chunk.Test.cpp
             LibCVDiceAnnotation/JpegAnnotation.Test.cpp
 
-            CVDice/utils/algorithm.Test.cpp)
+            CVDice/utils/algorithm.Test.cpp CVDice/utils/hsv.Test.cpp)
 
     add_custom_target(CVDiceTests_Resources)
 

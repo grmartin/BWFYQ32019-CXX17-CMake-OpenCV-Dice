@@ -198,7 +198,7 @@ add_executable(CVDice
         dice/transformers/Contouring.cpp dice/transformers/Contouring.h
 
         ${CVDice_Sources_QT5}
-        dice/ui/MainWindowListColDelegate.h dice/ui/CVQTTag.h)
+        dice/ui/MainWindowListColDelegate.h dice/ui/CVQTTag.h dice/utils/hsv.h)
 
 add_executable(CVDiceAnnotator annotation/main.cpp annotation/VecByte.h annotation/Chunk.h annotation/Strings.h)
 
