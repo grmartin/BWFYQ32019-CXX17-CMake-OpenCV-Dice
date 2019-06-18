@@ -38,7 +38,30 @@
 //        CHAIN_APPROX_TC89_KCOS = 4
 //};
 
+
 namespace cvdice::transformers {
+    namespace types::contours {
+        struct Contour {
+            std::vector<cv::Point> points;
+            cv::Point center;
+            cv::Moments moments;
+            struct hierarchy {
+                int depth;
+                int next;
+                int previous;
+                int firstChild;
+                int parent;
+            } hierarchy;
+        };
+
+        typedef std::vector<Contour> Contours;
+
+        struct DataListenerEvent {
+            int depth;
+            types::contours::Contours contours;
+        };
+    };
+
     class Contouring : public XformerBase {
         int retr = 0;
         int approx = 0;
@@ -53,6 +76,7 @@ namespace cvdice::transformers {
 
         void performUpdate() override;
 
+        std::function<void(types::contours::DataListenerEvent)> receivedDataListener;
     protected:
         void buildUi() override;
 

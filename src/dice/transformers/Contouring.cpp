@@ -51,12 +51,15 @@ void cvdice::transformers::Contouring::performUpdate() {
         RNG rng(12345);
         vector<vector<Point>> contours;
         vector<Vec4i> hierarchy;
+        types::contours::Contours processedContours = {};
 
         findContours(source_image.clone(), contours, hierarchy, retr, approx+1, cv::Point(0, 0));
 
         colorImage.copyTo(display);
 
-        std::function<int(int, int)> findDepth = [hierarchy, &findDepth](int idx, int depth) {
+        int completeDepth = -1;
+
+        std::function<int(int, int)> findDepth = [&hierarchy, &findDepth](int idx, int depth) {
             auto curr = hierarchy[idx];
 
             if (curr[HIER_PARENT] == -1) return depth;
@@ -65,12 +68,36 @@ void cvdice::transformers::Contouring::performUpdate() {
         };
 
         for (int i = 0; i < contours.size(); i++) {
+            auto moments = cv::moments(contours[i], true);
+            auto contour = types::contours::Contour{
+                .points =  contours[i],
+                .moments = moments,
+                // `Point2d` is 2xDouble not 2-Dimension.
+                .center = cv::Point2d(moments.m10 / moments.m00, moments.m01 / moments.m00),
+                .hierarchy = {
+                    .depth = findDepth(i, 0),
+                    .next = hierarchy[i][HIER_NEXT],
+                    .previous = hierarchy[i][HIER_PREV],
+                    .firstChild = hierarchy[i][HIER_1ST_CH],
+                    .parent = hierarchy[i][HIER_PARENT]
+                }
+            };
+
+            if (contour.hierarchy.depth > completeDepth) completeDepth = contour.hierarchy.depth;
+
             // printf("{\"i\": %d, \"next\": %d, \"prev\": %d, \"1stc\": %d, \"pare\": %d},\n", i, hierarchy[i].val[Next], hierarchy[i].val[Previous], hierarchy[i].val[FirstChild], hierarchy[i].val[Parent]);
-            auto rgb = cvdice::hsv::hsvToRgb(findDepth(i, 0)*90, 100, 100);
+            auto rgb = cvdice::hsv::hsvToRgb(/*contour.hierarchy.depth*/i*15 % 360, 100, 100);
 
             Scalar color = Scalar(rgb.r, rgb.g, rgb.b);
             drawContours(display, contours, i, color, 2, 8, hierarchy, 0, Point());
+
+            processedContours.push_back(contour);
         }
+
+        this->receivedDataListener(types::contours::DataListenerEvent{
+            .depth = completeDepth,
+            .contours = processedContours
+        });
     } catch (std::exception &e) {
         display = source_image.clone();
     }

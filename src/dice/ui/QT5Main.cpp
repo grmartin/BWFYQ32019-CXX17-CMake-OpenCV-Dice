@@ -41,6 +41,19 @@ int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *
     edger->showFor(mainWindowPtr, uiAppendToolbarFn);
     contouring->showFor(mainWindowPtr, uiAppendToolbarFn);
 
+    contouring->receivedDataListener = [](transformers::types::contours::DataListenerEvent x) {
+        int minimalDepth = MAX(-1, x.depth - 1); // this should filter us to only our subjects, the pips and dice faces.
+
+        transformers::types::contours::Contours possibleDiceAndPips;
+        std::copy_if(x.contours.begin(), x.contours.end(), std::back_inserter(possibleDiceAndPips), [minimalDepth](transformers::types::contours::Contour c){ return c.hierarchy.depth >= minimalDepth; } );
+
+        // TODO: DETERMINE DICE FACES, AND CHILDREN
+        // TODO: DETERMINE IF CIRCLE-ISH
+        // TODO: COUNT AND SUPPLY VALUES
+
+        printf("debug point 1");
+    };
+
     CHAIN_XFORMER(colorer, thresholder);
     CHAIN_XFORMER(thresholder, edger);
     CHAIN_XFORMER(edger, contouring);
