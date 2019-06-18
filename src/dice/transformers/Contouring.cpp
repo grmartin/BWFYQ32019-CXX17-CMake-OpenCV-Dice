@@ -86,7 +86,7 @@ void cvdice::transformers::Contouring::performUpdate() {
             if (contour.hierarchy.depth > completeDepth) completeDepth = contour.hierarchy.depth;
 
             // printf("{\"i\": %d, \"next\": %d, \"prev\": %d, \"1stc\": %d, \"pare\": %d},\n", i, hierarchy[i].val[Next], hierarchy[i].val[Previous], hierarchy[i].val[FirstChild], hierarchy[i].val[Parent]);
-            auto rgb = cvdice::hsv::hsvToRgb(/*contour.hierarchy.depth*/i*15 % 360, 100, 100);
+            auto rgb = cvdice::hsv::hsvToRgb((contour.hierarchy.depth * 45) % 360, 100, 100);
 
             Scalar color = Scalar(rgb.r, rgb.g, rgb.b);
             drawContours(display, contours, i, color, 2, 8, hierarchy, 0, Point());
@@ -96,7 +96,8 @@ void cvdice::transformers::Contouring::performUpdate() {
 
         this->receivedDataListener(types::contours::DataListenerEvent{
             .depth = completeDepth,
-            .contours = processedContours
+            .contours = processedContours,
+            .sourceImage = &display
         });
     } catch (std::exception &e) {
         display = source_image.clone();

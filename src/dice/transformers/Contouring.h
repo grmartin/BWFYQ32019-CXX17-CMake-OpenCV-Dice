@@ -59,6 +59,7 @@ namespace cvdice::transformers {
         struct DataListenerEvent {
             int depth;
             types::contours::Contours contours;
+            cv::Mat* sourceImage;
         };
     };
 
