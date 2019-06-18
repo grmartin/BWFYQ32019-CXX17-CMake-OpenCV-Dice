@@ -25,6 +25,9 @@ using Contours = cvdice::transformers::types::contours::Contours;
 using Contour = cvdice::transformers::types::contours::Contour;
 
 int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *jpeg) {
+    const auto blackColor = cv::Scalar(0,0,0);
+    const auto whiteColor = cv::Scalar(255,255,255);
+
     QApplication app(argc, argv);
     QApplication::setApplicationDisplayName("CVDice");
     MainWindow mainWindow(nullptr);
@@ -50,59 +53,71 @@ int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *
     edger->showFor(mainWindowPtr, uiAppendToolbarFn);
     contouring->showFor(mainWindowPtr, uiAppendToolbarFn);
 
-    contouring->receivedDataListener = [](transformers::types::contours::DataListenerEvent x) {
-        int minimalDepth = MAX(-1, x.depth - 1); // this should filter us to only our subjects, the pips and dice faces.
+    contouring->receivedDataListener = [blackColor, whiteColor, jpeg](transformers::types::contours::DataListenerEvent dataEvent) {
+        int minimalDepth = MAX(-1, dataEvent.depth - 1); // this should filter us to only our subjects, the pips and dice faces.
+        const auto epsilonDeviation = 0.04;
 
-        Contours possibleDiceAndPips;
-        std::vector<std::pair<Contour, RoughShape>> roughShapes;
-        std::copy_if(x.contours.begin(), x.contours.end(), std::back_inserter(possibleDiceAndPips), [minimalDepth](Contour c){ return c.hierarchy.depth >= minimalDepth; } );
+        std::multiset<uint8_t> diceAndPipsSet;
 
-        auto nudge = [](cv::Point pt, int x, int y){
-            return cv::Point(pt.x + x, pt.y + y);
-        };
+        {
+            Contours possibleDiceAndPips;
+            std::vector<std::pair<Contour, RoughShape>> roughShapes;
+            std::vector<std::pair<Contour, RoughShape>> safeShapes;
+            std::map<int, int> diceAndPipValues = {};
 
-        auto poorMansShadow = [&](const cv::String& text, cv::Point org) {
-            cv::putText(*x.sourceImage, text, nudge(org, 1, 1), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0,0,0), 1);
-            cv::putText(*x.sourceImage, text, nudge(org, -1, 1), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0,0,0), 1);
-            cv::putText(*x.sourceImage, text, nudge(org, 1, -1), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0,0,0), 1);
-            cv::putText(*x.sourceImage, text, nudge(org, -1, -1), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0,0,0), 1);
-            cv::putText(*x.sourceImage, text, org, cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255,255,255), 1);
-        };
+            std::copy_if(dataEvent.contours.begin(), dataEvent.contours.end(), std::back_inserter(possibleDiceAndPips),
+                         [minimalDepth](Contour c) { return c.hierarchy.depth >= minimalDepth; });
 
-        auto epsilonDeviation = 0.04;
+            auto poorMansShadow = [&](const cv::String &text, cv::Point org) {
+                cv::putText(*dataEvent.sourceImage, text, org, cv::FONT_HERSHEY_PLAIN, 1, blackColor, 4, cv::LINE_4);
+                cv::putText(*dataEvent.sourceImage, text, org, cv::FONT_HERSHEY_PLAIN, 1, whiteColor, 1, cv::LINE_4);
+            };
 
-        std::transform(possibleDiceAndPips.begin(), possibleDiceAndPips.end(), std::back_inserter(roughShapes), [&](Contour c){
-            auto guess = RoughShape::Else;
-            std::vector<cv::Point> approxPts;
-            auto perimeter = cv::arcLength(c.points, true);
-            cv::approxPolyDP(c.points, approxPts, perimeter*epsilonDeviation, true);
+            std::transform(possibleDiceAndPips.begin(), possibleDiceAndPips.end(), std::back_inserter(roughShapes),
+                           [&](Contour c) {
+                               auto guess = RoughShape::Else;
+                               std::vector<cv::Point> approxPts;
+                               auto perimeter = cv::arcLength(c.points, true);
+                               cv::approxPolyDP(c.points, approxPts, perimeter * epsilonDeviation, true);
 
-            auto points = approxPts.size();
+                               auto points = approxPts.size();
 
-            switch (points) {
-                case 4: guess = RoughShape::Square;
-                case 1: case 2: case 3: break;
-                default: guess = RoughShape::Circle;
-            }
+                               switch (points) {
+                                   case 4: guess = RoughShape::Square;
+                                   case 1: case 2: case 3: break;
+                                   default: guess = RoughShape::Circle;
+                               }
 
-            switch (guess) {
-                case Square:
-                    poorMansShadow("S", c.center);
-                    break;
-                case Circle:
-                    poorMansShadow("C", c.center);
-                    break;
-                default: /* No-Op */;
-            }
+                               switch (guess) {
+                                   case Square: poorMansShadow("S", c.center); break;
+                                   case Circle: poorMansShadow("C", c.center); break;
+                                   default: /* No-Op */;
+                               }
 
-            return std::make_pair(c, guess);
-        });
+                               return std::make_pair(c, guess);
+                           });
 
+            std::copy_if(roughShapes.begin(), roughShapes.end(), std::back_inserter(safeShapes),
+                         [](std::pair<Contour, RoughShape> pair) { return pair.second != Else; });
 
-        // TODO: DETERMINE DICE FACES, AND CHILDREN
-        // TODO: COUNT AND SUPPLY VALUES
+            std::sort(safeShapes.begin(), safeShapes.end(), [](auto a, auto b){
+                return a.second < b.second;
+            });
 
-        printf("debug point 1");
+            std::for_each(safeShapes.begin(), safeShapes.end(), [&diceAndPipValues](auto pair){
+                switch (pair.second) {
+                    case Square: diceAndPipValues[pair.first.index] = 0; break;
+                    case Circle: diceAndPipValues.at(pair.first.hierarchy.parent) = diceAndPipValues.at(pair.first.hierarchy.parent)+1; break;
+                    default: /* No-Op */;
+                }
+            });
+
+            std::for_each(diceAndPipValues.begin(), diceAndPipValues.end(), [&diceAndPipsSet](auto pair) {
+                diceAndPipsSet.insert(static_cast<uint8_t>(pair.second));
+            });
+        }
+
+        printf("EQUAL PIPS? %s", diceAndPipsSet == jpeg->expectedPips ? "TRUE" : "FALSE");
     };
 
     CHAIN_XFORMER(colorer, thresholder);

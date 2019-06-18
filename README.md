@@ -10,13 +10,15 @@ Currently the plan is as follows (and subject to change):
 
 1. ~~Build application + library to encode/decode expected values in to a JPEG image. : \[*COMPLETE*]~~
 2. ~~Add in quick testing suite (Catch2 @ `./src/tests`): \[*COMPLETE*]~~
-3. Build application to read pips off dice and compare to values. : \[*WIP*]
-4. Update to handle live images (on simple dice) : \[*PLANNED*]
-5. Improve as time goes on to detect different colors/types of pip-ed dice. : \[*PLANNED*]
+3. ~~Build application to read pips off dice and compare to values. : \[*COMPLETE*]~~
+4. Compilation Support for Linux. : \[*WIP*]
+5. Compilation Support for Windows 10. : \[*PLANNED*]
+6. Update to handle live images (on simple dice) : \[*PLANNED*]
+7. Improve as time goes on to detect different colors/types of pip-ed dice. : \[*PLANNED*]
 
 Validate inter-operating system support:
 
-1. MacOS (Apple/Xcode Clang)
+1. ~~MacOS (Apple/Xcode Clang) : \[*COMPLETE*]~~
 2. Linux (GCC/G++8)
 3. MSVC++ 16 (2019)
 

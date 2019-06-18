@@ -42,6 +42,7 @@
 namespace cvdice::transformers {
     namespace types::contours {
         struct Contour {
+            int index;
             std::vector<cv::Point> points;
             cv::Point center;
             cv::Moments moments;

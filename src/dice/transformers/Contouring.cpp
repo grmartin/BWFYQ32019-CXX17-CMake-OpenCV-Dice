@@ -70,6 +70,7 @@ void cvdice::transformers::Contouring::performUpdate() {
         for (int i = 0; i < contours.size(); i++) {
             auto moments = cv::moments(contours[i], true);
             auto contour = types::contours::Contour{
+                .index = i,
                 .points =  contours[i],
                 .moments = moments,
                 // `Point2d` is 2xDouble not 2-Dimension.
@@ -86,7 +87,7 @@ void cvdice::transformers::Contouring::performUpdate() {
             if (contour.hierarchy.depth > completeDepth) completeDepth = contour.hierarchy.depth;
 
             // printf("{\"i\": %d, \"next\": %d, \"prev\": %d, \"1stc\": %d, \"pare\": %d},\n", i, hierarchy[i].val[Next], hierarchy[i].val[Previous], hierarchy[i].val[FirstChild], hierarchy[i].val[Parent]);
-            auto rgb = cvdice::hsv::hsvToRgb((contour.hierarchy.depth * 45) % 360, 100, 100);
+            auto rgb = cvdice::hsv::hsvToRgb((contour.hierarchy.depth * 24) % 360, 100, 100);
 
             Scalar color = Scalar(rgb.r, rgb.g, rgb.b);
             drawContours(display, contours, i, color, 2, 8, hierarchy, 0, Point());
