@@ -8,10 +8,6 @@ if (CVD_TESTING)
 
     project(CVDiceTests)
 
-    file(GLOB TestResources res/*)
-
-    message(STATUS "Copying Testing Resources: ${TestResources}")
-
     add_executable(CVDiceTests
             main.cpp
 
@@ -20,18 +16,18 @@ if (CVD_TESTING)
             LibCVDiceAnnotation/Chunk.Test.cpp
             LibCVDiceAnnotation/JpegAnnotation.Test.cpp
 
-            CVDice/utils/algorithm.Test.cpp CVDice/utils/hsv.Test.cpp)
+            CVDice/utils/algorithm.Test.cpp CVDice/utils/hsv.Test.cpp
 
+            CVDice/transformers/basicDiceSourceImages.Test.cpp)
+
+    target_link_libraries(CVDiceTests PRIVATE CVDice)
+    target_link_libraries(CVDiceTests PRIVATE LibCVDiceAnnotation)
+
+    message(STATUS "Copying Testing Resources: ${TestResources}")
     add_custom_target(CVDiceTests_Resources)
-
-    target_link_libraries(CVDiceTests CVDice)
-    target_link_libraries(CVDiceTests LibCVDiceAnnotation)
-
+    add_custom_command(TARGET CVDiceTests_Resources PRE_BUILD
+            COMMAND ${CMAKE_COMMAND} -E
+            copy_directory ${PROJECT_SOURCE_DIR}/res/ ${CMAKE_CURRENT_BINARY_DIR})
     add_dependencies(CVDiceTests CVDiceTests_Resources)
 
-    foreach (ResFile ${TestResources})
-        add_custom_command(TARGET CVDiceTests_Resources PRE_BUILD
-                COMMAND ${CMAKE_COMMAND} -E
-                copy ${ResFile} ${CMAKE_CURRENT_BINARY_DIR})
-    endforeach ()
 endif ()

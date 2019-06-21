@@ -21,6 +21,8 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 set(CVDICE_CMAKE_FIND_PATHS ./ ./lib/* ../stock/*)
 
+set(CVDICE_SRC_ROOT ${PROJECT_SOURCE_DIR})
+
 #include("cmake/DebugBuildEnv.cmake")
 include("cmake/OSDetection.cmake")
 
@@ -31,6 +33,8 @@ function(message_var msg varName)
         message(STATUS "${msg}: <DEFAULT>")
     endif ()
 endfunction()
+
+message_var("Hunter Cache Root" HUNTER_CACHED_ROOT)
 
 if (CMAKE_BUILD_TYPE STREQUAL Testing OR CMAKE_BUILD_TYPE STREQUAL Debug)
     set(CVD_TESTING true)
@@ -141,7 +145,7 @@ function(linkGUI target)
 
         target_link_libraries(${target} PUBLIC Qt5::Widgets)
         target_compile_definitions(${target} PUBLIC CVD_USE_QT5=1)
-        target_include_directories(${target} SYSTEM PRIVATE ./dice/ui)
+        target_include_directories(${target} SYSTEM PUBLIC ${PROJECT_SOURCE_DIR}/dice/ui)
 
         set_property(TARGET ${target} APPEND PROPERTY AUTOMOC ON)
         set_property(TARGET ${target} APPEND PROPERTY AUTOUIC ON)
@@ -166,8 +170,14 @@ endfunction()
 
 # TARGETS + OUTPUTS ----------------------------------------------------------------------------------------------------
 
+if (CVD_TESTING)
+    add_library(CVDice STATIC)
+else()
+    add_executable(CVDice)
+endif()
+
 if ("${CVD_USE_QT5}")
-    list(APPEND CVDice_Sources_QT5
+    target_sources(CVDice PRIVATE
             # UI
             dice/ui/QT5Main.cpp dice/ui/QT5Main.h
 
@@ -179,10 +189,11 @@ if ("${CVD_USE_QT5}")
             dice/ui/widgets/CVQTImageToolbar.h dice/ui/widgets/CVQTImageToolbar.cpp dice/ui/widgets/CVQTImageToolbar.ui
 
             dice/ui/widgets/InvokeDelegate.h dice/ui/widgets/UiPredefine.h
-            dice/transformers/bases/QT5Xformer.cpp)
+            dice/transformers/bases/QT5Xformer.cpp
+            dice/ui/MainWindowListColDelegate.h dice/ui/CVQTTag.h)
 endif ()
 
-add_executable(CVDice
+target_sources(CVDice PRIVATE
 
         main.cpp
 
@@ -197,8 +208,7 @@ add_executable(CVDice
         dice/transformers/Edger.cpp dice/transformers/Edger.h
         dice/transformers/Contouring.cpp dice/transformers/Contouring.h
 
-        ${CVDice_Sources_QT5}
-        dice/ui/MainWindowListColDelegate.h dice/ui/CVQTTag.h dice/utils/hsv.h)
+        dice/utils/hsv.h)
 
 add_executable(CVDiceAnnotator annotation/main.cpp annotation/VecByte.h annotation/Chunk.h annotation/Strings.h)
 
@@ -210,10 +220,6 @@ if (CVD_TESTING)
     set_property(
             TARGET CVDice
             APPEND PROPERTY OUTPUT_NAME CVDice_Testable
-    )
-    set_property(
-            TARGET CVDice
-            APPEND PROPERTY ENABLE_EXPORTS 1
     )
 endif ()
 

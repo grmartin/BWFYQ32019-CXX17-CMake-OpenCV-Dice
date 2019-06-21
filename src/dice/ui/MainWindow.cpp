@@ -2,6 +2,7 @@
 #include "MainWindowListColDelegate.h"
 #include "ui_mainwindow.h"
 
+#include <dice/ui/widgets/CVQTImageToolbar.h>
 #include <QScreen>
 
 MainWindow::MainWindow(QWidget *parent) :

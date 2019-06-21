@@ -2,10 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <dice/ui/widgets/CVQTImageToolbar.h>
 #include <opencv2/core/mat.hpp>
 #include <QListWidgetItem>
 
+
+class CVQTImageToolbar;
 constexpr int MainWindowToolbarItemDataRoleIdentifier = 1701;
 
 namespace Ui {
