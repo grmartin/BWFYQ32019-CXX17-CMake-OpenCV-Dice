@@ -71,7 +71,7 @@ namespace cvdice::transformers {
         int max_approx = 3; // x = (y+1)
 
     public:
-        explicit Contouring(const cv::Mat &sourceImage, int retr = 0, int approx = 0) : XformerBase(sourceImage) {
+        explicit Contouring(int retr = 0, int approx = 0) : XformerBase() {
             this->retr = retr;
             this->approx = approx;
         }
@@ -82,8 +82,10 @@ namespace cvdice::transformers {
     protected:
         void buildUi() override;
 
+#ifdef CVD_USE_QT5
     private:
         void imageToolbarChanged(CVQTImageToolbar *toolbar, int changedValue) override;
+#endif
     };
 };
 

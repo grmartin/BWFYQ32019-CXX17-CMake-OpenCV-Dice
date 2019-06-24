@@ -20,7 +20,7 @@ namespace cvdice::transformers {
 
         bool has_built_ui = false;
 
-        explicit Xformer(const cv::Mat &sourceImage);
+        explicit Xformer();
 
         virtual void buildUi() = 0;
 

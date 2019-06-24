@@ -21,7 +21,7 @@ QObject *cvdice::transformers::QT5Xformer::findByClassName(const QObject *const 
     return res;
 }
 
-cvdice::transformers::QT5Xformer::QT5Xformer(const cv::Mat &sourceImage) : Xformer(sourceImage) {
+cvdice::transformers::QT5Xformer::QT5Xformer() : Xformer() {
     this->opaqueUiHandle = nullptr;
 }
 

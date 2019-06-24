@@ -11,6 +11,7 @@
 #   import "./QT5Xformer.h"
 #   define XformerBase cvdice::transformers::QT5Xformer
 #else
+#   import "./Xformer.h"
 #   define XformerBase cvdice::transformers::Xformer
 #endif
 

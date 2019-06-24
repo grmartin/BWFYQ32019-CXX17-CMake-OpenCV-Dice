@@ -20,8 +20,11 @@ if (CVD_TESTING)
 
             CVDice/transformers/basicDiceSourceImages.Test.cpp)
 
-    target_link_libraries(CVDiceTests PRIVATE CVDice)
-    target_link_libraries(CVDiceTests PRIVATE LibCVDiceAnnotation)
+    target_link_libraries(CVDiceTests PRIVATE CVDiceBase LibCVDiceAnnotation)
+
+    if ("${CVD_USE_QT5}")
+        target_link_libraries(CVDiceTests PRIVATE CVDiceQT)
+    endif()
 
     message(STATUS "Copying Testing Resources: ${TestResources}")
     add_custom_target(CVDiceTests_Resources)

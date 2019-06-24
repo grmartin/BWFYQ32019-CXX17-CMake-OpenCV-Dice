@@ -24,7 +24,7 @@ namespace cvdice::transformers {
         void *opaqueUiHandle;
 
     public:
-        explicit QT5Xformer(const cv::Mat &sourceImage);
+        explicit QT5Xformer();
 
         void showFor(const std::shared_ptr<QMainWindow> &window, QT5UIAppender uiAppender);
 

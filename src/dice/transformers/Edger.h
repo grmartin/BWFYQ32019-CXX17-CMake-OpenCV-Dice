@@ -17,7 +17,7 @@ namespace cvdice::transformers {
         int kernel_size = 0; // must be between 3 and 7 and odd (3, 5, 7), `x = 3+(y*2)` see calcKern.
 
     public:
-        explicit Edger(const cv::Mat &sourceImage) : XformerBase(sourceImage) {};
+        explicit Edger() : XformerBase() {};
 
         void performUpdate() override;
 

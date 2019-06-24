@@ -17,7 +17,7 @@ namespace cvdice::transformers {
         int const max_binary_value = 255;
 
     public:
-        explicit Thresholder(const cv::Mat &sourceImage, int type = 3, int value = 0) : XformerBase(sourceImage) {
+        explicit Thresholder(int type = 3, int value = 0) : XformerBase() {
             this->value = value;
             this->type = type;
         }

@@ -12,7 +12,7 @@
 #include "../JpegFile.h"
 #include "../../annotation/JpegAnnotation.h"
 
-cvdice::transformers::Colorer::Colorer(const cv::Mat &sourceImage, int value) : XformerBase(sourceImage) {
+cvdice::transformers::Colorer::Colorer(int value) : XformerBase() {
     this->validValues = {
         //cv::COLOR_BGR2BGRA, cv::COLOR_BGRA2BGR, cv::COLOR_BGR2RGBA, cv::COLOR_RGBA2BGR, cv::COLOR_BGR2RGB, cv::COLOR_BGRA2RGBA,
         cv::COLOR_BGR2GRAY, cv::COLOR_RGB2GRAY,

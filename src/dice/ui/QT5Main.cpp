@@ -10,6 +10,7 @@
 #include <opencv2/imgproc.hpp>
 
 #include "dice/transformers/bases/XformerBase.h"
+#include "../transformers/ImageOrigin.h"
 #include "../transformers/Colorer.h"
 #include "../transformers/Thresholder.h"
 #include "../transformers/Contouring.h"
@@ -36,10 +37,11 @@ int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *
 
     mainWindow.show();
 
-    auto colorer = new transformers::Colorer(jpeg->matrix, 1);
-    auto thresholder = new transformers::Thresholder(jpeg->matrix, 3, 218);
-    auto edger = new transformers::Edger(jpeg->matrix);
-    auto contouring = new transformers::Contouring(jpeg->matrix, cv::RetrievalModes::RETR_CCOMP, 2);
+    auto imageOrigin = new transformers::ImageOrigin(jpeg->matrix, false);
+    auto colorer = new transformers::Colorer(1);
+    auto thresholder = new transformers::Thresholder(3, 218);
+    auto edger = new transformers::Edger();
+    auto contouring = new transformers::Contouring(cv::RetrievalModes::RETR_CCOMP, 2);
 
     auto uiAppendToolbarFn = [&mainWindow](CVQTImageToolbar *toolbar) {
         QString name = toolbar->objectName();
@@ -120,11 +122,12 @@ int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *
         printf("EQUAL PIPS? %s", diceAndPipsSet == jpeg->expectedPips ? "TRUE" : "FALSE");
     };
 
+    CHAIN_XFORMER(imageOrigin, colorer);
     CHAIN_XFORMER(colorer, thresholder);
     CHAIN_XFORMER(thresholder, edger);
     CHAIN_XFORMER(edger, contouring);
 
-    colorer->update();
+    imageOrigin->push();
 
     return QApplication::exec();
 }

@@ -36,7 +36,7 @@ endfunction()
 
 message_var("Hunter Cache Root" HUNTER_CACHED_ROOT)
 
-if (CMAKE_BUILD_TYPE STREQUAL Testing OR CMAKE_BUILD_TYPE STREQUAL Debug)
+if (CMAKE_BUILD_TYPE STREQUAL Testing)
     set(CVD_TESTING true)
 endif ()
 
@@ -64,6 +64,7 @@ message_var("System Name" CMAKE_SYSTEM_NAME)
 message(STATUS "")
 
 # MANDATORY COMPONENTS -------------------------------------------------------------------------------------------------
+
 # TODO: See if we can conditionally rebuild OpenCV only if its not found locally rather than assuming it is to be
 #   via hunter... like we do QT5.
 hunter_add_package(OpenCV COMPONENTS)
@@ -140,15 +141,17 @@ endif ()
 
 # TARGET CONFIGURATION HELPERS -----------------------------------------------------------------------------------------
 
-function(linkGUI target)
+function(linkGUI target mocit)
     if ("${CVD_USE_QT5}")
 
         target_link_libraries(${target} PUBLIC Qt5::Widgets)
         target_compile_definitions(${target} PUBLIC CVD_USE_QT5=1)
         target_include_directories(${target} SYSTEM PUBLIC ${PROJECT_SOURCE_DIR}/dice/ui)
 
-        set_property(TARGET ${target} APPEND PROPERTY AUTOMOC ON)
-        set_property(TARGET ${target} APPEND PROPERTY AUTOUIC ON)
+        if (${mocit})
+            set_property(TARGET ${target} APPEND PROPERTY AUTOMOC ON)
+            set_property(TARGET ${target} APPEND PROPERTY AUTOUIC ON)
+        endif ()
 
         if (CVD_MACOS)
             target_link_libraries(${target} PUBLIC ${SECURITY_FRAMEWORK})
@@ -170,14 +173,27 @@ endfunction()
 
 # TARGETS + OUTPUTS ----------------------------------------------------------------------------------------------------
 
-if (CVD_TESTING)
-    add_library(CVDice STATIC)
-else()
-    add_executable(CVDice)
-endif()
+add_executable(CVDice main.cpp)
+
+add_library(CVDiceBase STATIC
+        dice/JpegFile.cpp dice/JpegFile.h
+
+        dice/transformers/bases/XformerBase.h dice/transformers/bases/Xformer.h dice/transformers/bases/Xformer.cpp
+
+        dice/utils/algorithm.h
+
+        dice/transformers/Thresholder.cpp dice/transformers/Thresholder.h
+        dice/transformers/Colorer.cpp dice/transformers/Colorer.h
+        dice/transformers/Edger.cpp dice/transformers/Edger.h
+        dice/transformers/Contouring.cpp dice/transformers/Contouring.h
+        dice/transformers/Terminus.cpp dice/transformers/Terminus.h
+
+        dice/utils/hsv.h
+
+        dice/transformers/ImageOrigin.cpp dice/transformers/ImageOrigin.h)
 
 if ("${CVD_USE_QT5}")
-    target_sources(CVDice PRIVATE
+    add_library(CVDiceQT STATIC
             # UI
             dice/ui/QT5Main.cpp dice/ui/QT5Main.h
 
@@ -192,44 +208,33 @@ if ("${CVD_USE_QT5}")
             dice/transformers/bases/QT5Xformer.cpp
             dice/ui/MainWindowListColDelegate.h dice/ui/CVQTTag.h)
 endif ()
-
-target_sources(CVDice PRIVATE
-
-        main.cpp
-
-        dice/JpegFile.cpp dice/JpegFile.h
-
-        dice/transformers/bases/XformerBase.h dice/transformers/bases/Xformer.h dice/transformers/bases/Xformer.cpp
-
-        dice/utils/algorithm.h
-
-        dice/transformers/Thresholder.cpp dice/transformers/Thresholder.h
-        dice/transformers/Colorer.cpp dice/transformers/Colorer.h
-        dice/transformers/Edger.cpp dice/transformers/Edger.h
-        dice/transformers/Contouring.cpp dice/transformers/Contouring.h
-
-        dice/utils/hsv.h)
+#            dice/ui/ModalitySelectionWindow.cpp dice/ui/ModalitySelectionWindow.h dice/ui/ModalitySelectionWindow.ui
 
 add_executable(CVDiceAnnotator annotation/main.cpp annotation/VecByte.h annotation/Chunk.h annotation/Strings.h)
 
-add_library(LibCVDiceAnnotation
-        annotation/JpegAnnotation.cpp annotation/JpegAnnotation.h
-        )
+add_library(LibCVDiceAnnotation STATIC
+        annotation/JpegAnnotation.cpp annotation/JpegAnnotation.h)
 
-if (CVD_TESTING)
-    set_property(
-            TARGET CVDice
-            APPEND PROPERTY OUTPUT_NAME CVDice_Testable
-    )
-endif ()
+# TARGETS > LINKING ----------------------------------------------------------------------------------------------------
 
-target_link_libraries(CVDice PRIVATE LibCVDiceAnnotation)
+target_link_libraries(CVDice PRIVATE CVDiceBase)
+target_link_libraries(CVDiceBase PUBLIC LibCVDiceAnnotation)
 target_link_libraries(CVDiceAnnotator PRIVATE LibCVDiceAnnotation)
 target_link_libraries(LibCVDiceAnnotation PUBLIC ${OpenCV_LIBS})
 
-linkGUI(CVDice)
-linkAll(CVDice)
+linkAll(CVDiceBase)
 linkAll(CVDiceAnnotator)
 linkAll(LibCVDiceAnnotation)
+
+if ("${CVD_USE_QT5}")
+    target_link_libraries(CVDiceQT PRIVATE CVDiceBase)
+
+    target_link_libraries(CVDice PRIVATE CVDiceQT)
+
+    linkGUI(CVDiceQT true)
+    linkGUI(CVDiceBase false) # Switch Xformers to QT Versions.
+
+    linkAll(CVDiceQT)
+endif ()
 
 add_subdirectory(tests)

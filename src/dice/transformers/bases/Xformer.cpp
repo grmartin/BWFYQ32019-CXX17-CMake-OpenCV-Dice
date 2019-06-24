@@ -6,9 +6,7 @@
 #include "Xformer.h"
 #include "XformerBase.h"
 
-cvdice::transformers::Xformer::Xformer(const cv::Mat &sourceImage) {
-    this->source_image = sourceImage.clone();
-}
+cvdice::transformers::Xformer::Xformer() { }
 
 void cvdice::transformers::Xformer::update(const cv::Mat &updatedImage) {
     if (!has_built_ui) {
