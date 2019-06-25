@@ -5,22 +5,23 @@
 
 #if CVD_USE_QT5
 #   include "dice/ui/QT5Main.h"
-#else
-#   include "dice/transformers/bases/Xformer.h"
-#   include "dice/transformers/ImageOrigin.h"
-#   include "dice/transformers/Colorer.h"
-#   include "dice/transformers/Thresholder.h"
-#   include "dice/transformers/Contouring.h"
-#   include "dice/transformers/Edger.h"
-#   include "dice/transformers/Terminus.h"
-
-using namespace cvdice;
 #endif
 
 #include "annotation/JpegAnnotation.h"
+
 #include "dice/JpegFile.h"
 
+#include "dice/transformers/bases/Xformer.h"
+#include "dice/transformers/ImageOrigin.h"
+#include "dice/transformers/Colorer.h"
+#include "dice/transformers/Thresholder.h"
+#include "dice/transformers/Contouring.h"
+#include "dice/transformers/Edger.h"
+#include "dice/transformers/Terminus.h"
+
+using namespace cvdice;
 using namespace cv;
+
 constexpr std::string_view primaryWindowName = "Experimentation Window"; // NOLINT(cert-err58-cpp)
 
 int main(int argc, char *argv[], char *envp[]) {
@@ -28,14 +29,35 @@ int main(int argc, char *argv[], char *envp[]) {
     cvdice::JpegFile *file;
     Mat greyed;
 
-    CommandLineParser parser(argc, argv, "{@input | ../data/fruits.jpg | input image}");
+    const String keys =
+        "{help h usage ? |                    | print this message   }"
+        "{@input         | <none>             | input image          }"
+        #if CVD_USE_QT5
+        "{noQT           |                    | Disable QT           }"
+        #endif
+        ;
+
+    CommandLineParser parser(argc, argv, keys);
+    parser.about("CVDice 1.0");
+
+    if (parser.has("help"))
+    {
+        parser.printMessage();
+        return 0;
+    }
+
     file = cvdice::JpegFile::fromFile(fs::path(parser.get<String>("@input")));
 
     std::cout << "Got: " << *file << std::endl;
 
 #if CVD_USE_QT5
-    return cvdice::ui::QT5Main(argc, argv, envp, file);
-#else
+    bool noQT = parser.has("noQT");
+
+    if (!noQT) {
+        return cvdice::ui::QT5Main(argc, argv, envp, file);
+    }
+#endif
+
     cv::namedWindow(windowName, WINDOW_GUI_EXPANDED);
 
     auto imageOrigin = new transformers::ImageOrigin(file->matrix, false);
@@ -57,5 +79,4 @@ int main(int argc, char *argv[], char *envp[]) {
 
     waitKey(0);
     return 0;
-#endif
 }
