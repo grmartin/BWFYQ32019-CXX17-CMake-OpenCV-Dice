@@ -14,8 +14,8 @@ UI_PREDEFINE(CVQTImageToolbar);
 class CVQTImageToolbarDelegate {
 public:
     CVQTImageToolbarDelegate() = default;
-    virtual void imageToolbarChanged(CVQTImageToolbar *toolbar, int value) = 0;
-    virtual void imageToolbarEnabledChanged(CVQTImageToolbar *toolbar, bool isEnabled) = 0;
+    virtual void imageToolbarChanged(QWidget *sender, int value) = 0;
+    virtual void imageToolbarEnabledChanged(QWidget *sender, bool isEnabled) = 0;
 };
 
 class CVQTImageToolbar : public QWidget

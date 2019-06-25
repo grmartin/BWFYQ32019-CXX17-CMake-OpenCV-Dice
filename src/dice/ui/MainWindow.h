@@ -24,9 +24,11 @@ public:
 
     ~MainWindow();
 
-    QListWidgetItem *addToolbar(CVQTImageToolbar *toolbar, QString *identifier = nullptr);
+    QListWidgetItem *addToolbar(QWidget *toolbar, QString *identifier = nullptr);
 
     void updateMatrix(const cv::Mat &matrix);
+
+    static QObject *findByClassName(const QObject *o, const char *name);
 
     friend class MainWindowListColDelegate;
 };

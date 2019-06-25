@@ -4,7 +4,7 @@
 
 #include "ImageOrigin.h"
 
-cvdice::transformers::ImageOrigin::ImageOrigin(cv::Mat &imageMatrix, bool pushImmediately) : XformerBase() {
+cvdice::transformers::ImageOrigin::ImageOrigin(cv::Mat &imageMatrix, bool pushImmediately) : Xformer() {
     this->source_image = imageMatrix.clone();
 
     if (pushImmediately)
@@ -14,7 +14,5 @@ cvdice::transformers::ImageOrigin::ImageOrigin(cv::Mat &imageMatrix, bool pushIm
 void cvdice::transformers::ImageOrigin::push() {
     this->update(this->source_image.clone());
 }
-
-void cvdice::transformers::ImageOrigin::buildUi() {}
 
 void cvdice::transformers::ImageOrigin::performUpdate() {}

@@ -6,15 +6,20 @@
 #include "MainWindow.h"
 
 #include <QApplication>
-#include <dice/JpegFile.h>
 #include <opencv2/imgproc.hpp>
 
-#include "dice/transformers/bases/XformerBase.h"
+#include "../JpegFile.h"
+#include "../transformers/bases/Xformer.h"
 #include "../transformers/ImageOrigin.h"
 #include "../transformers/Colorer.h"
 #include "../transformers/Thresholder.h"
+#include "../transformers/AdaptiveThresholder.h"
 #include "../transformers/Contouring.h"
 #include "../transformers/Edger.h"
+#include "../transformers/Terminus.h"
+
+#include "widgets/CVQTImageToolbar.h"
+#include "widgets/CVQTWidget.h"
 
 enum RoughShape {
     Square,
@@ -33,27 +38,25 @@ int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *
     QApplication::setApplicationDisplayName("CVDice");
     MainWindow mainWindow(nullptr);
 
-    auto mainWindowPtr = std::shared_ptr<QMainWindow>(&mainWindow);
+    auto mainWindowPtr = &mainWindow;
 
     mainWindow.show();
 
+    // From this point forward, were a playground... code will change frequently to test algorithms.
+
     auto imageOrigin = new transformers::ImageOrigin(jpeg->matrix, false);
     auto colorer = new transformers::Colorer(1);
-    auto thresholder = new transformers::Thresholder(3, 218);
+    auto thresholder = new transformers::AdaptiveThresholder(cv::THRESH_BINARY, cv::ADAPTIVE_THRESH_MEAN_C, 1, 11);
     auto edger = new transformers::Edger();
     auto contouring = new transformers::Contouring(cv::RetrievalModes::RETR_CCOMP, 2);
-
-    auto uiAppendToolbarFn = [&mainWindow](CVQTImageToolbar *toolbar) {
-        QString name = toolbar->objectName();
-        return mainWindow.addToolbar(toolbar, &name);
-    };
+    auto terminus = new transformers::Terminus([&mainWindowPtr](cv::Mat image){
+        if (auto object = MainWindow::findByClassName(mainWindowPtr, "cvdice::ui::widgets::CVQTWidget")) {
+            dynamic_cast<ui::widgets::CVQTWidget *>(object)->paintMatrix(image);
+        }
+    });
 
     edger->enabled = false;
-
-    colorer->showFor(mainWindowPtr, uiAppendToolbarFn);
-    thresholder->showFor(mainWindowPtr, uiAppendToolbarFn);
-    edger->showFor(mainWindowPtr, uiAppendToolbarFn);
-    contouring->showFor(mainWindowPtr, uiAppendToolbarFn);
+    contouring->enabled = false;
 
     contouring->receivedDataListener = [blackColor, whiteColor, jpeg](transformers::types::contours::DataListenerEvent dataEvent) {
         int minimalDepth = MAX(-1, dataEvent.depth - 1); // this should filter us to only our subjects, the pips and dice faces.
@@ -126,6 +129,7 @@ int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *
     CHAIN_XFORMER(colorer, thresholder);
     CHAIN_XFORMER(thresholder, edger);
     CHAIN_XFORMER(edger, contouring);
+    CHAIN_XFORMER(contouring, terminus);
 
     imageOrigin->push();
 

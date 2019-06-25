@@ -8,11 +8,11 @@
 #include <iostream>
 #include <utility>
 
-#include "bases/XformerBase.h"
+#include "bases/Xformer.h"
 #include "../JpegFile.h"
 #include "../../annotation/JpegAnnotation.h"
 
-cvdice::transformers::Colorer::Colorer(int value) : XformerBase() {
+cvdice::transformers::Colorer::Colorer(int value) : Xformer() {
     this->validValues = {
         //cv::COLOR_BGR2BGRA, cv::COLOR_BGRA2BGR, cv::COLOR_BGR2RGBA, cv::COLOR_RGBA2BGR, cv::COLOR_BGR2RGB, cv::COLOR_BGRA2RGBA,
         cv::COLOR_BGR2GRAY, cv::COLOR_RGB2GRAY,
@@ -40,28 +40,5 @@ void cvdice::transformers::Colorer::performUpdate() {
         } catch (cv::Exception &ignored) { return; }
     }
 
-    XformerBase::update(display);
+    Xformer::update(display);
 }
-
-void cvdice::transformers::Colorer::buildUi() {
-#ifdef CVD_USE_QT5
-    if (this->appender == nullptr) return;
-    CVQTImageToolbar *toolbar = new CVQTImageToolbar("Color Value:", value, 0, this->validValues.size() - 1,
-                                                     this->enabled);
-    toolbar->setDelegate(this);
-    this->opaqueUiHandle = this->appender(toolbar);
-#endif
-    this->has_built_ui = true;
-}
-
-#ifdef CVD_USE_QT5
-
-void cvdice::transformers::Colorer::imageToolbarChanged(CVQTImageToolbar *toolbar, int changedValue) {
-    if (changedValue == this->value) return;
-
-    this->value = changedValue;
-    toolbar->setValueLabel(QString::number(changedValue));
-    this->update();
-}
-
-#endif

@@ -5,11 +5,12 @@
 #ifndef CVDICE_THRESHOLDER_H
 #define CVDICE_THRESHOLDER_H
 
-#import "bases/XformerBase.h"
+#include <opencv2/imgproc.hpp>
+#import "bases/Xformer.h"
 
 namespace cvdice::transformers {
-    class Thresholder : public XformerBase {
-        int type = 3;
+    class Thresholder : public Xformer {
+        int type = cv::ThresholdTypes::THRESH_TOZERO;
         int value = 0;
 
         int const max_type = 4;
@@ -17,21 +18,22 @@ namespace cvdice::transformers {
         int const max_binary_value = 255;
 
     public:
-        explicit Thresholder(int type = 3, int value = 0) : XformerBase() {
+        explicit Thresholder(int type = cv::ThresholdTypes::THRESH_TOZERO, int value = 0) : Xformer() {
             this->value = value;
             this->type = type;
         }
 
         void performUpdate() override;
 
-    private:
-        void buildUi() override;
+        void setType(int typeVal) {
+            type = typeVal;
+            this->update();
+        }
 
-#ifdef CVD_USE_QT5
-
-        void imageToolbarChanged(CVQTImageToolbar *toolbar, int value) override;
-
-#endif
+        void setValue(int valueVal) {
+            value = valueVal;
+            this->update();
+        }
     };
 }
 #endif //CVDICE_THRESHOLDER_H

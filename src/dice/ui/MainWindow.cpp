@@ -3,7 +3,19 @@
 #include "ui_mainwindow.h"
 
 #include <dice/ui/widgets/CVQTImageToolbar.h>
+#include <dice/ui/widgets/CVQTPicker.h>
 #include <QScreen>
+
+QObject *MainWindow::MainWindow::findByClassName(const QObject *const o, const char *name) {
+    QObject *res = nullptr;
+        foreach (QObject *c, o->children()) {
+            if (res) break;
+
+            if (QString::fromLocal8Bit(c->metaObject()->className()) == name) res = c;
+            else res = findByClassName(c, name);
+        }
+    return res;
+}
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -20,7 +32,7 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
-QListWidgetItem *MainWindow::addToolbar(CVQTImageToolbar *toolbar, QString *identifier) {
+QListWidgetItem *MainWindow::addToolbar(QWidget *toolbar, QString *identifier) {
     auto item = new QListWidgetItem(ui->toolbarList);
     ui->toolbarList->addItem(item);
     item->setSizeHint(toolbar->sizeHint());

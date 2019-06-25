@@ -5,23 +5,22 @@
 #ifndef CVDICE_COLORER_H
 #define CVDICE_COLORER_H
 
-#import "bases/XformerBase.h"
+#import "bases/Xformer.h"
 
 namespace cvdice::transformers {
-    class Colorer : public XformerBase {
+    class Colorer : public Xformer {
         int value = 0;
+        std::vector<int> validValues;
 
     public:
         explicit Colorer(int value = 0);
 
         void performUpdate() override;
 
-    private:
-        void buildUi() override;
-
-#ifdef CVD_USE_QT5
-        void imageToolbarChanged(CVQTImageToolbar *toolbar, int value) override;
-#endif
+        void setValue(int theValue) {
+            value = theValue;
+            this->update();
+        }
     };
 }
 

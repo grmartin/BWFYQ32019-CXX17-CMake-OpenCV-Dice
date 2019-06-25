@@ -5,10 +5,10 @@
 #ifndef CVDICE_IMAGEORIGIN_H
 #define CVDICE_IMAGEORIGIN_H
 
-#import "bases/XformerBase.h"
+#import "bases/Xformer.h"
 
 namespace cvdice::transformers {
-    class ImageOrigin : public XformerBase {
+    class ImageOrigin : public Xformer {
         std::function<void(cv::Mat)> completionFunction;
 
     public:
@@ -17,7 +17,6 @@ namespace cvdice::transformers {
         void push();
 
     private:
-        void buildUi() override;;
         void performUpdate() override;
     };
 }

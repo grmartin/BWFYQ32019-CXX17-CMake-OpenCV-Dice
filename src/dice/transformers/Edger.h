@@ -5,11 +5,10 @@
 #ifndef CVDICE_EDGER_H
 #define CVDICE_EDGER_H
 
-
-#import "bases/XformerBase.h"
+#import "bases/Xformer.h"
 
 namespace cvdice::transformers {
-    class Edger : public XformerBase {
+    class Edger : public Xformer {
         int ratio = 0;
         int threshold_value = 0;
         int max_ratio = 7;
@@ -17,20 +16,30 @@ namespace cvdice::transformers {
         int kernel_size = 0; // must be between 3 and 7 and odd (3, 5, 7), `x = 3+(y*2)` see calcKern.
 
     public:
-        explicit Edger() : XformerBase() {};
+        explicit Edger() : Xformer() {};
 
         void performUpdate() override;
 
-    private:
-        void buildUi() override;
+        void setRatio(int ratioVal) {
+            ratio = ratioVal;
+            this->update();
+        }
 
+        void setThresholdValue(int thresholdValue) {
+            threshold_value = thresholdValue;
+            this->update();
+        }
+
+        void setMaxThreshold(int maxThreshold) {
+            max_threshold = maxThreshold;
+            this->update();
+        }
+
+    private:
         static int calcKern(int sliderVal) {
             return (3+(sliderVal*2));
         }
 
-#ifdef CVD_USE_QT5
-        void imageToolbarChanged(CVQTImageToolbar *toolbar, int value) override;
-#endif
     };
 }
 

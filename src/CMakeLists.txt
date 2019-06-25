@@ -9,7 +9,7 @@ HunterGate(
 
 project(CVDice
         VERSION 0.0.0.0
-        DESCRIPTION "A basic benchwork/play project to detect/ccount the pips on rolled dice using OpenCV"
+        DESCRIPTION "A basic benchwork/play project to detect/count the pips on rolled dice using OpenCV"
         HOMEPAGE_URL "https://github.com/grmartin/BWFYQ32019-CXX17-CMake-OpenCV-Dice"
         LANGUAGES CXX)
 
@@ -178,11 +178,12 @@ add_executable(CVDice main.cpp)
 add_library(CVDiceBase STATIC
         dice/JpegFile.cpp dice/JpegFile.h
 
-        dice/transformers/bases/XformerBase.h dice/transformers/bases/Xformer.h dice/transformers/bases/Xformer.cpp
+        dice/transformers/bases/Xformer.h dice/transformers/bases/Xformer.cpp
 
         dice/utils/algorithm.h
 
         dice/transformers/Thresholder.cpp dice/transformers/Thresholder.h
+        dice/transformers/AdaptiveThresholder.cpp dice/transformers/AdaptiveThresholder.h
         dice/transformers/Colorer.cpp dice/transformers/Colorer.h
         dice/transformers/Edger.cpp dice/transformers/Edger.h
         dice/transformers/Contouring.cpp dice/transformers/Contouring.h
@@ -190,22 +191,21 @@ add_library(CVDiceBase STATIC
 
         dice/utils/hsv.h
 
-        dice/transformers/ImageOrigin.cpp dice/transformers/ImageOrigin.h)
+        dice/transformers/ImageOrigin.cpp dice/transformers/ImageOrigin.h
+        dice/DiceProc.cpp dice/DiceProc.h)
 
 if ("${CVD_USE_QT5}")
     add_library(CVDiceQT STATIC
             # UI
             dice/ui/QT5Main.cpp dice/ui/QT5Main.h
 
-            dice/transformers/bases/QT5Xformer.h
-
             dice/ui/MainWindow.cpp dice/ui/MainWindow.h dice/ui/MainWindow.ui
 
             dice/ui/widgets/CVQTWidget.h
             dice/ui/widgets/CVQTImageToolbar.h dice/ui/widgets/CVQTImageToolbar.cpp dice/ui/widgets/CVQTImageToolbar.ui
+            dice/ui/widgets/CVQTPicker.h dice/ui/widgets/CVQTPicker.cpp dice/ui/widgets/CVQTPicker.ui
 
             dice/ui/widgets/InvokeDelegate.h dice/ui/widgets/UiPredefine.h
-            dice/transformers/bases/QT5Xformer.cpp
             dice/ui/MainWindowListColDelegate.h dice/ui/CVQTTag.h)
 endif ()
 #            dice/ui/ModalitySelectionWindow.cpp dice/ui/ModalitySelectionWindow.h dice/ui/ModalitySelectionWindow.ui
@@ -221,6 +221,8 @@ target_link_libraries(CVDice PRIVATE CVDiceBase)
 target_link_libraries(CVDiceBase PUBLIC LibCVDiceAnnotation)
 target_link_libraries(CVDiceAnnotator PRIVATE LibCVDiceAnnotation)
 target_link_libraries(LibCVDiceAnnotation PUBLIC ${OpenCV_LIBS})
+
+set_target_properties(LibCVDiceAnnotation PROPERTIES LIBRARY_OUTPUT_NAME "CVDiceAnnotation")
 
 linkAll(CVDiceBase)
 linkAll(CVDiceAnnotator)

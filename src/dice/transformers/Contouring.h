@@ -5,7 +5,7 @@
 #ifndef CVDICE_CONTOURING_H
 #define CVDICE_CONTOURING_H
 
-#include "bases/XformerBase.h"
+#include "bases/Xformer.h"
 
 //enum RetrievalModes {
 //    /** retrieves only the extreme outer contours. It sets `hierarchy[i][2]=hierarchy[i][3]=-1` for
@@ -64,14 +64,14 @@ namespace cvdice::transformers {
         };
     };
 
-    class Contouring : public XformerBase {
+    class Contouring : public Xformer {
         int retr = 0;
         int approx = 0;
         int max_retr = 4;
         int max_approx = 3; // x = (y+1)
 
     public:
-        explicit Contouring(int retr = 0, int approx = 0) : XformerBase() {
+        explicit Contouring(int retr = 0, int approx = 0) : Xformer() {
             this->retr = retr;
             this->approx = approx;
         }
@@ -79,13 +79,16 @@ namespace cvdice::transformers {
         void performUpdate() override;
 
         std::function<void(types::contours::DataListenerEvent)> receivedDataListener;
-    protected:
-        void buildUi() override;
 
-#ifdef CVD_USE_QT5
-    private:
-        void imageToolbarChanged(CVQTImageToolbar *toolbar, int changedValue) override;
-#endif
+        void setRetr(int retrVal) {
+            retr = retrVal;
+            this->update();
+        }
+
+        void setApprox(int approxVal) {
+            approx = approxVal;
+            this->update();
+        }
     };
 };
 

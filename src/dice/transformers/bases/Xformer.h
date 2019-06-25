@@ -7,39 +7,34 @@
 
 #import <opencv2/core/mat.hpp>
 
-namespace cvdice::transformers {
+#define CHAIN_XFORMER(first, second) first->chainTo = [&second](cv::Mat mat) { second->chainAction(mat); }
 
+namespace cvdice::transformers {
 
     class Xformer {
     protected:
         cv::Mat source_image;
         cv::Mat display;
 
-        std::string window_name;
-        std::vector<int> validValues;
-
         bool has_built_ui = false;
 
         explicit Xformer();
 
-        virtual void buildUi() = 0;
-
-        virtual void update(const cv::Mat &updatedImage);
-
-        virtual void updateWindow(const cv::Mat &mat);
+        virtual void update(const cv::Mat& updatedImage);
 
     public:
-        std::function<void(cv::Mat)> chainTo;
-
-        void showFor(const std::string &windowName);
+        std::function<void(cv::Mat)> chainTo; // = nullptr;
 
         virtual void performUpdate() = 0;
 
         virtual void update() final;
 
-        virtual void chainAction(const cv::Mat &mat);
+        virtual void chainAction(const cv::Mat& mat);
 
         bool enabled = true;
+
+        std::function<void(Xformer* transformer)> buildUi = [](Xformer* ignored){};
+        std::function<void(Xformer* transformer, const cv::Mat& mat)> updateWindow = [](Xformer* ignored1, const cv::Mat& ignored2){};
     };
 
 

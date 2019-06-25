@@ -4,28 +4,19 @@
 
 #include <opencv2/opencv.hpp>
 #include "Xformer.h"
-#include "XformerBase.h"
 
-cvdice::transformers::Xformer::Xformer() { }
+cvdice::transformers::Xformer::Xformer() = default;
 
 void cvdice::transformers::Xformer::update(const cv::Mat &updatedImage) {
     if (!has_built_ui) {
         has_built_ui = true;
-        buildUi();
+        buildUi(this);
     }
 
     this->display = updatedImage.clone();
 
     if (chainTo) chainTo(updatedImage.clone());
-    else updateWindow(updatedImage);
-}
-
-void cvdice::transformers::Xformer::updateWindow(const cv::Mat &updatedImage) {
-    imshow(window_name, updatedImage);
-}
-
-void cvdice::transformers::Xformer::showFor(const std::string &windowName) {
-    this->window_name = windowName;
+    else updateWindow(this, updatedImage);
 }
 
 void cvdice::transformers::Xformer::chainAction(const cv::Mat &mat) {

@@ -1,5 +1,5 @@
 #include <iostream>
-#include <dice/transformers/bases/XformerBase.h>
+#include <dice/transformers/bases/Xformer.h>
 #include "CVQTImageToolbar.h"
 #include "ui_CVQTImageToolbar.h"
 #include "InvokeDelegate.h"
