@@ -8,7 +8,7 @@
 #include <QListWidgetItem>
 #include <QStyledItemDelegate>
 #include "MainWindow.h"
-#include "ui_mainwindow.h"
+#include "ui_MainWindow.h"
 
 class MainWindowListColDelegate: public QStyledItemDelegate {
     Q_OBJECT;

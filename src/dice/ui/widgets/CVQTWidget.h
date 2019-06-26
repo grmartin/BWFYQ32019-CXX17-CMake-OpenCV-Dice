@@ -2,9 +2,6 @@
 // Created by Glenn R. Martin on 2019-05-10.
 //
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "hicpp-signed-bitwise"
-
 #ifndef CVDICE_CVQTWIDGET_H
 #define CVDICE_CVQTWIDGET_H
 
@@ -19,8 +16,8 @@
 
 using namespace cv;
 
-namespace cvdice::ui::widgets {
-#   define BYTES_PER 3
+namespace cvdice{ namespace ui{ namespace widgets {
+    #   define BYTES_PER 3
 
 class CVQTWidget : public QScrollArea {
     Q_OBJECT
@@ -66,8 +63,6 @@ class CVQTWidget : public QScrollArea {
             repaint();
         }
     };
-}
+}}}
 #undef BYTES_PER
 #endif //CVDICE_CVQTWIDGET_H
-
-#pragma clang diagnostic pop

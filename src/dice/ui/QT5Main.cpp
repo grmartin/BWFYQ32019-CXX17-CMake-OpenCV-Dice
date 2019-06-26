@@ -44,19 +44,31 @@ int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *
 
     // From this point forward, were a playground... code will change frequently to test algorithms.
 
-    auto imageOrigin = new transformers::ImageOrigin(jpeg->matrix, false);
-    auto colorer = new transformers::Colorer(1);
-    auto thresholder = new transformers::AdaptiveThresholder(cv::THRESH_BINARY, cv::ADAPTIVE_THRESH_MEAN_C, 1, 11);
-    auto edger = new transformers::Edger();
-    auto contouring = new transformers::Contouring(cv::RetrievalModes::RETR_CCOMP, 2);
-    auto terminus = new transformers::Terminus([&mainWindowPtr](cv::Mat image){
+    auto imageOrigin = NEW_XFORMER_AUTO(transformers::ImageOrigin, jpeg->matrix, false);
+    auto colorer = NEW_XFORMER_AUTO(transformers::Colorer, 1);
+//    auto thresholder = NEW_XFORMER_AUTO(transformers::AdaptiveThresholder, cv::THRESH_BINARY, cv::ADAPTIVE_THRESH_MEAN_C, 1, 11);
+    auto thresholder = new transformers::Thresholder(3, 218);
+    auto edger = NEW_XFORMER_AUTO(transformers::Edger);
+    auto contouring = NEW_XFORMER_AUTO(transformers::Contouring, cv::RetrievalModes::RETR_CCOMP, 2);
+    transformers::Terminus *terminus = NEW_XFORMER_AUTO(transformers::Terminus, [=](cv::Mat image) {
         if (auto object = MainWindow::findByClassName(mainWindowPtr, "cvdice::ui::widgets::CVQTWidget")) {
             dynamic_cast<ui::widgets::CVQTWidget *>(object)->paintMatrix(image);
         }
     });
 
+    auto bindAndDelegate = [&mainWindow](CVQTImageToolbar *toolbar, cvdice::transformers::Xformer* xformer, std::function<void(QWidget *sender, int value)> fn) {
+        toolbar->setDelegate(new CVQTImageToolbarDelegateWrapper(
+            fn,
+            [=](QWidget *sender, bool enabled){ xformer->enabled = enabled; xformer->update(); }
+        ));
+
+        QString name = toolbar->objectName();
+        return mainWindow.addToolbar(toolbar, &name);
+    };
+
+    bindAndDelegate(new CVQTImageToolbar("Color Value:", colorer->getValue(), 0, colorer->validValues.size() - 1, colorer->enabled), colorer, [&](QWidget *sender, int value){colorer->setValue(value); });
+
     edger->enabled = false;
-    contouring->enabled = false;
 
     contouring->receivedDataListener = [blackColor, whiteColor, jpeg](transformers::types::contours::DataListenerEvent dataEvent) {
         int minimalDepth = MAX(-1, dataEvent.depth - 1); // this should filter us to only our subjects, the pips and dice faces.
@@ -132,6 +144,5 @@ int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *
     CHAIN_XFORMER(contouring, terminus);
 
     imageOrigin->push();
-
     return QApplication::exec();
 }

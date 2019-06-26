@@ -6,7 +6,7 @@
 #define CVDICE_THRESHOLDER_H
 
 #include <opencv2/imgproc.hpp>
-#import "bases/Xformer.h"
+#include "bases/Xformer.h"
 
 namespace cvdice::transformers {
     class Thresholder : public Xformer {

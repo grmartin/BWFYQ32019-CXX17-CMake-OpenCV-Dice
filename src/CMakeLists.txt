@@ -10,8 +10,7 @@ HunterGate(
 project(CVDice
         VERSION 0.0.0.0
         DESCRIPTION "A basic benchwork/play project to detect/count the pips on rolled dice using OpenCV"
-        HOMEPAGE_URL "https://github.com/grmartin/BWFYQ32019-CXX17-CMake-OpenCV-Dice"
-        LANGUAGES CXX)
+        HOMEPAGE_URL "https://github.com/grmartin/BWFYQ32019-CXX17-CMake-OpenCV-Dice")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -179,6 +178,7 @@ add_library(CVDiceBase STATIC
         dice/JpegFile.cpp dice/JpegFile.h
 
         dice/transformers/bases/Xformer.h dice/transformers/bases/Xformer.cpp
+        dice/transformers/bases/Identifiable.cpp dice/transformers/bases/Identifiable.h
 
         dice/utils/algorithm.h
 

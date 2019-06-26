@@ -1,6 +1,6 @@
 #include "MainWindow.h"
 #include "MainWindowListColDelegate.h"
-#include "ui_mainwindow.h"
+#include "ui_MainWindow.h"
 
 #include <dice/ui/widgets/CVQTImageToolbar.h>
 #include <dice/ui/widgets/CVQTPicker.h>

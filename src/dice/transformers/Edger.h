@@ -5,7 +5,7 @@
 #ifndef CVDICE_EDGER_H
 #define CVDICE_EDGER_H
 
-#import "bases/Xformer.h"
+#include "bases/Xformer.h"
 
 namespace cvdice::transformers {
     class Edger : public Xformer {

@@ -5,11 +5,12 @@
 #ifndef CVDICE_COLORER_H
 #define CVDICE_COLORER_H
 
-#import "bases/Xformer.h"
+#include "bases/Xformer.h"
 
 namespace cvdice::transformers {
     class Colorer : public Xformer {
         int value = 0;
+    public:
         std::vector<int> validValues;
 
     public:
@@ -20,6 +21,10 @@ namespace cvdice::transformers {
         void setValue(int theValue) {
             value = theValue;
             this->update();
+        }
+
+        int getValue() const {
+            return value;
         }
     };
 }

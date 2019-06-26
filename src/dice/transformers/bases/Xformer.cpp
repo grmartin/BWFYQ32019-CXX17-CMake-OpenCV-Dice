@@ -5,7 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include "Xformer.h"
 
-cvdice::transformers::Xformer::Xformer() = default;
+cvdice::transformers::Xformer::Xformer() : Identifiable() {};
 
 void cvdice::transformers::Xformer::update(const cv::Mat &updatedImage) {
     if (!has_built_ui) {
@@ -15,7 +15,7 @@ void cvdice::transformers::Xformer::update(const cv::Mat &updatedImage) {
 
     this->display = updatedImage.clone();
 
-    if (chainTo) chainTo(updatedImage.clone());
+    if (chainTo) chainTo(this, updatedImage.clone());
     else updateWindow(this, updatedImage);
 }
 

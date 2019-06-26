@@ -5,7 +5,7 @@
 #ifndef CVDICE_ADAPTIVETHRESHOLDER_H
 #define CVDICE_ADAPTIVETHRESHOLDER_H
 
-#import "bases/Xformer.h"
+#include "bases/Xformer.h"
 #include <set>
 #include <opencv2/imgproc.hpp>
 

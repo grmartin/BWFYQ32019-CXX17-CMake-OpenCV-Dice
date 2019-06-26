@@ -5,13 +5,20 @@
 #ifndef CVDICE_XFORMER_H
 #define CVDICE_XFORMER_H
 
-#import <opencv2/core/mat.hpp>
+#include "Identifiable.h"
 
-#define CHAIN_XFORMER(first, second) first->chainTo = [&second](cv::Mat mat) { second->chainAction(mat); }
+#include <functional>
+
+#include <opencv2/core/mat.hpp>
+
+#define CHAIN_XFORMER(first, second) first->chainTo = [&second](cvdice::transformers::Identifiable* inputXformer, cv::Mat mat) { \
+    second->arbitraryValues.insert(inputXformer->arbitraryValues.begin(), inputXformer->arbitraryValues.end()); \
+    second->chainAction(mat); \
+}
 
 namespace cvdice::transformers {
 
-    class Xformer {
+    class Xformer : public Identifiable {
     protected:
         cv::Mat source_image;
         cv::Mat display;
@@ -23,7 +30,7 @@ namespace cvdice::transformers {
         virtual void update(const cv::Mat& updatedImage);
 
     public:
-        std::function<void(cv::Mat)> chainTo; // = nullptr;
+        std::function<void(cvdice::transformers::Identifiable*, cv::Mat)> chainTo; // = nullptr;
 
         virtual void performUpdate() = 0;
 

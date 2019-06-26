@@ -7,6 +7,8 @@
 #include <QWidget>
 #endif
 
+#include <functional>
+
 #include "UiPredefine.h"
 
 UI_PREDEFINE(CVQTImageToolbar);
@@ -16,6 +18,22 @@ public:
     CVQTImageToolbarDelegate() = default;
     virtual void imageToolbarChanged(QWidget *sender, int value) = 0;
     virtual void imageToolbarEnabledChanged(QWidget *sender, bool isEnabled) = 0;
+};
+
+class CVQTImageToolbarDelegateWrapper : public CVQTImageToolbarDelegate{
+protected:
+    void imageToolbarChanged(QWidget *sender, int value) override;
+    void imageToolbarEnabledChanged(QWidget *sender, bool isEnabled) override;
+
+public:
+    CVQTImageToolbarDelegateWrapper(std::function<void(QWidget *sender, int value)> fnImageToolbarChanged, std::function<void(QWidget *sender, bool isEnabled)> fnImageToolbarEnabledChanged) {
+        onImageToolbarChanged = fnImageToolbarChanged;
+        onImageToolbarEnabledChanged = fnImageToolbarEnabledChanged;
+    }
+
+public:
+    std::function<void(QWidget *sender, int value)> onImageToolbarChanged;
+    std::function<void(QWidget *sender, bool isEnabled)> onImageToolbarEnabledChanged;
 };
 
 class CVQTImageToolbar : public QWidget

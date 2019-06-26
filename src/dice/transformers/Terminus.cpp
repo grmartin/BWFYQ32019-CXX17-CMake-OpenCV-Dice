@@ -7,7 +7,7 @@
 #include "Terminus.h"
 
 cvdice::transformers::Terminus::Terminus(std::function<void(cv::Mat)> fn) : Xformer(){
-    this->completionFunction = std::move(fn);
+    this->completionFunction = fn;
 }
 
 void cvdice::transformers::Terminus::performUpdate() {

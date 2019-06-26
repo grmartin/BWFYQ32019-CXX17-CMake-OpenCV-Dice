@@ -5,7 +5,7 @@
 #ifndef CVDICE_TERMINUS_H
 #define CVDICE_TERMINUS_H
 
-#import "bases/Xformer.h"
+#include "bases/Xformer.h"
 
 namespace cvdice::transformers {
     class Terminus : public Xformer {

@@ -48,3 +48,13 @@ void CVQTImageToolbar::hideEnabled() {
 void CVQTImageToolbar::setValueLabel(const QString& string) {
     ui->valueLabel->setText(string);
 }
+
+void CVQTImageToolbarDelegateWrapper::imageToolbarChanged(QWidget *sender, int value) {
+    if (this->onImageToolbarChanged != nullptr)
+        this->onImageToolbarChanged(sender, value);
+}
+
+void CVQTImageToolbarDelegateWrapper::imageToolbarEnabledChanged(QWidget *sender, bool isEnabled) {
+    if (this->onImageToolbarEnabledChanged != nullptr)
+        this->onImageToolbarEnabledChanged(sender, isEnabled);
+}

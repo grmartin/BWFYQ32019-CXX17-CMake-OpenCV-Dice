@@ -3,9 +3,9 @@
 //
 
 #include <ostream>
-#import <set>
+#include <set>
 
-#import <opencv2/core/mat.hpp>
+#include <opencv2/core/mat.hpp>
 
 #include "../annotation/JpegAnnotation.h"
 

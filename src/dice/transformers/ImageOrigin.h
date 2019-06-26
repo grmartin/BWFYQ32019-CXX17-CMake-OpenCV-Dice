@@ -5,7 +5,7 @@
 #ifndef CVDICE_IMAGEORIGIN_H
 #define CVDICE_IMAGEORIGIN_H
 
-#import "bases/Xformer.h"
+#include "bases/Xformer.h"
 
 namespace cvdice::transformers {
     class ImageOrigin : public Xformer {

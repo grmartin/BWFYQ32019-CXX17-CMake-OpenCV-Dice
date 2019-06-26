@@ -45,9 +45,9 @@ void cvdice::transformers::Contouring::performUpdate() {
             auto contour = types::contours::Contour{
                 .index = i,
                 .points =  contours[i],
-                .moments = moments,
                 // `Point2d` is 2xDouble not 2-Dimension.
                 .center = cv::Point2d(moments.m10 / moments.m00, moments.m01 / moments.m00),
+                .moments = moments,
                 .hierarchy = {
                     .depth = findDepth(i, 0),
                     .next = hierarchy[i][HIER_NEXT],
@@ -68,11 +68,13 @@ void cvdice::transformers::Contouring::performUpdate() {
             processedContours.push_back(contour);
         }
 
-        this->receivedDataListener(types::contours::DataListenerEvent{
+        this->arbitraryValues["types::contours::DataListenerEvent"] = {types::contours::DataListenerEvent{
             .depth = completeDepth,
             .contours = processedContours,
             .sourceImage = &display
-        });
+        }};
+
+        this->receivedDataListener(std::any_cast<types::contours::DataListenerEvent>(this->arbitraryValues["types::contours::DataListenerEvent"]));
     } catch (std::exception &e) {
         display = source_image.clone();
     }

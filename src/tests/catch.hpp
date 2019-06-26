@@ -1174,7 +1174,7 @@ namespace Catch {
 #ifdef __OBJC__
 // start catch_objc_arc.hpp
 
-#import <Foundation/Foundation.h>
+#include <Foundation/Foundation.h>
 
 #ifdef __has_feature
 #define CATCH_ARC_ENABLED __has_feature(objc_arc)
@@ -4265,7 +4265,7 @@ namespace Catch {
 #ifdef __OBJC__
 // start catch_objc.hpp
 
-#import <objc/runtime.h>
+#include <objc/runtime.h>
 
 #include <string>
 
@@ -8585,7 +8585,7 @@ namespace Catch {
 
 // end catch_exception_translator_registry.h
 #ifdef __OBJC__
-#import "Foundation/Foundation.h"
+#include "Foundation/Foundation.h"
 #endif
 
 namespace Catch {
