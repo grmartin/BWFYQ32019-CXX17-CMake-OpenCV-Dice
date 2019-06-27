@@ -68,13 +68,13 @@ void cvdice::transformers::Contouring::performUpdate() {
             processedContours.push_back(contour);
         }
 
-        this->arbitraryValues["types::contours::DataListenerEvent"] = {types::contours::DataListenerEvent{
+        struct types::contours::DataListenerEvent evt = types::contours::DataListenerEvent{
             .depth = completeDepth,
             .contours = processedContours,
             .sourceImage = &display
-        }};
+        };
 
-        this->receivedDataListener(std::any_cast<types::contours::DataListenerEvent>(this->arbitraryValues["types::contours::DataListenerEvent"]));
+        this->arbitraryValues["types::contours::DataListenerEvent"] = std::make_pair(evt, this->receivedDataListener(evt));
     } catch (std::exception &e) {
         display = source_image.clone();
     }

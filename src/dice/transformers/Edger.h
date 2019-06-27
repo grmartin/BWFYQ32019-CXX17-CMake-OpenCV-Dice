@@ -11,9 +11,10 @@ namespace cvdice::transformers {
     class Edger : public Xformer {
         int ratio = 0;
         int threshold_value = 0;
-        int max_ratio = 7;
-        int max_threshold = 100;
         int kernel_size = 0; // must be between 3 and 7 and odd (3, 5, 7), `x = 3+(y*2)` see calcKern.
+        const int max_ratio = 7;
+        const int max_threshold = 100;
+        const int max_kernel_size = 2;
 
     public:
         explicit Edger() : Xformer() {};
@@ -30,9 +31,33 @@ namespace cvdice::transformers {
             this->update();
         }
 
-        void setMaxThreshold(int maxThreshold) {
-            max_threshold = maxThreshold;
+        void setKernelSize(int kernelSize) {
+            kernel_size = kernelSize;
             this->update();
+        }
+
+        int getRatio() const {
+            return ratio;
+        }
+
+        int getThresholdValue() const {
+            return threshold_value;
+        }
+
+        int getKernelSize() const {
+            return kernel_size;
+        }
+
+        int getMaxRatio() const {
+            return max_ratio;
+        }
+
+        int getMaxThreshold() const {
+            return max_threshold;
+        }
+
+        int getMaxKernelSize() const {
+            return max_kernel_size;
         }
 
     private:

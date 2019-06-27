@@ -9,6 +9,7 @@
 #include <opencv2/imgproc.hpp>
 
 #include "../JpegFile.h"
+#include "../DiceProc.h"
 #include "../transformers/bases/Xformer.h"
 #include "../transformers/ImageOrigin.h"
 #include "../transformers/Colorer.h"
@@ -21,14 +22,19 @@
 #include "widgets/CVQTImageToolbar.h"
 #include "widgets/CVQTWidget.h"
 
-enum RoughShape {
-    Square,
-    Circle,
-    Else
-};
+namespace cvdice::ui {
+    void imagePipelineTermination(MainWindow *mainWindow, transformers::Terminus *terminus, const cv::Mat& image);
+}
 
 using Contours = cvdice::transformers::types::contours::Contours;
 using Contour = cvdice::transformers::types::contours::Contour;
+using RoughShape = cvdice::classification::RoughShape;
+
+void cvdice::ui::imagePipelineTermination(MainWindow* mainWindow, transformers::Terminus *terminus, const cv::Mat& image) {
+    if (auto object = MainWindow::findByClassName(mainWindow, "cvdice::ui::widgets::CVQTWidget")) {
+        dynamic_cast<ui::widgets::CVQTWidget *>(object)->paintMatrix(image);
+    }
+}
 
 int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *jpeg) {
     const auto blackColor = cv::Scalar(0,0,0);
@@ -50,15 +56,14 @@ int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *
     auto thresholder = new transformers::Thresholder(3, 218);
     auto edger = NEW_XFORMER_AUTO(transformers::Edger);
     auto contouring = NEW_XFORMER_AUTO(transformers::Contouring, cv::RetrievalModes::RETR_CCOMP, 2);
-    transformers::Terminus *terminus = NEW_XFORMER_AUTO(transformers::Terminus, [=](cv::Mat image) {
-        if (auto object = MainWindow::findByClassName(mainWindowPtr, "cvdice::ui::widgets::CVQTWidget")) {
-            dynamic_cast<ui::widgets::CVQTWidget *>(object)->paintMatrix(image);
-        }
-    });
+    transformers::Terminus *terminus = NEW_XFORMER_AUTO(transformers::Terminus, [&](cv::Mat image) { imagePipelineTermination(mainWindowPtr, terminus, image); });
 
-    auto bindAndDelegate = [&mainWindow](CVQTImageToolbar *toolbar, cvdice::transformers::Xformer* xformer, std::function<void(QWidget *sender, int value)> fn) {
+    auto bindAndDelegateE = [&](CVQTImageToolbar *toolbar, cvdice::transformers::Xformer* xformer, std::function<void(QWidget *sender, int value)> fn) {
         toolbar->setDelegate(new CVQTImageToolbarDelegateWrapper(
-            fn,
+            [=](QWidget *sender, int value){
+                try { fn(sender, value); } catch (Exception& ignored) {}
+                toolbar->setValueLabel(QString::number(value));
+            },
             [=](QWidget *sender, bool enabled){ xformer->enabled = enabled; xformer->update(); }
         ));
 
@@ -66,7 +71,27 @@ int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *
         return mainWindow.addToolbar(toolbar, &name);
     };
 
-    bindAndDelegate(new CVQTImageToolbar("Color Value:", colorer->getValue(), 0, colorer->validValues.size() - 1, colorer->enabled), colorer, [&](QWidget *sender, int value){colorer->setValue(value); });
+    auto bindAndDelegateD = [&](CVQTImageToolbar *toolbar, cvdice::transformers::Xformer* xformer, std::function<void(QWidget *sender, int value)> fn) {
+        toolbar->hideEnabled();
+        bindAndDelegateE(toolbar, xformer, fn);
+    };
+
+    // Colorer
+    bindAndDelegateE(new CVQTImageToolbar("Color Value:", colorer->getValue(), 0, colorer->validValues.size() - 1, colorer->enabled), colorer, [&](QWidget *sender, int value){ colorer->setValue(value); });
+
+    // Thresholder
+    bindAndDelegateE(new CVQTImageToolbar("Thresh Type:", thresholder->getType(), 0, thresholder->getMaxType(), thresholder->enabled), thresholder,  [&](QWidget *sender, int value){ thresholder->setType(value); });
+    bindAndDelegateD(new CVQTImageToolbar("Thresh Value:", thresholder->getValue(), 0, thresholder->getMaxValue(), thresholder->enabled), thresholder, [&](QWidget *sender, int value){ thresholder->setValue(value); });
+
+    // Edger
+    bindAndDelegateE(new CVQTImageToolbar("Canny Kern:", edger->getKernelSize(), 0, edger->getMaxKernelSize(), edger->enabled), edger,  [&](QWidget *sender, int value){ edger->setKernelSize(value); });
+    bindAndDelegateD(new CVQTImageToolbar("Canny Thresh Value:", edger->getThresholdValue(), 0, edger->getMaxThreshold(), edger->enabled), edger, [&](QWidget *sender, int value){ edger->setThresholdValue(value); });
+    bindAndDelegateD(new CVQTImageToolbar("Canny Ratio:", edger->getRatio(), 0, edger->getMaxRatio(), edger->enabled), edger, [&](QWidget *sender, int value){ edger->setRatio(value); });
+
+
+    // Contouring
+    bindAndDelegateE(new CVQTImageToolbar("Retrieval Mode:", contouring->getRetr(), 0, contouring->getMaxRetr(), contouring->enabled), contouring,  [&](QWidget *sender, int value){ contouring->setRetr(value); });
+    bindAndDelegateD(new CVQTImageToolbar("Approx Type:", contouring->getApprox(), 0, contouring->getMaxApprox(), contouring->enabled), contouring, [&](QWidget *sender, int value){ contouring->setApprox(value); });
 
     edger->enabled = false;
 
@@ -106,8 +131,8 @@ int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *
                                }
 
                                switch (guess) {
-                                   case Square: poorMansShadow("S", c.center); break;
-                                   case Circle: poorMansShadow("C", c.center); break;
+                                   case RoughShape::Square: poorMansShadow("S", c.center); break;
+                                   case RoughShape::Circle: poorMansShadow("C", c.center); break;
                                    default: /* No-Op */;
                                }
 
@@ -115,7 +140,7 @@ int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *
                            });
 
             std::copy_if(roughShapes.begin(), roughShapes.end(), std::back_inserter(safeShapes),
-                         [](std::pair<Contour, RoughShape> pair) { return pair.second != Else; });
+                         [](std::pair<Contour, RoughShape> pair) { return pair.second != RoughShape::Else; });
 
             std::sort(safeShapes.begin(), safeShapes.end(), [](auto a, auto b){
                 return a.second < b.second;
@@ -123,8 +148,8 @@ int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *
 
             std::for_each(safeShapes.begin(), safeShapes.end(), [&diceAndPipValues](auto pair){
                 switch (pair.second) {
-                    case Square: diceAndPipValues[pair.first.index] = 0; break;
-                    case Circle: diceAndPipValues.at(pair.first.hierarchy.parent) = diceAndPipValues.at(pair.first.hierarchy.parent)+1; break;
+                    case RoughShape::Square: diceAndPipValues[pair.first.index] = 0; break;
+                    case RoughShape::Circle: diceAndPipValues.at(pair.first.hierarchy.parent) = diceAndPipValues.at(pair.first.hierarchy.parent)+1; break;
                     default: /* No-Op */;
                 }
             });
@@ -135,6 +160,8 @@ int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *
         }
 
         printf("EQUAL PIPS? %s", diceAndPipsSet == jpeg->expectedPips ? "TRUE" : "FALSE");
+
+        return std::any(diceAndPipsSet);
     };
 
     CHAIN_XFORMER(imageOrigin, colorer);

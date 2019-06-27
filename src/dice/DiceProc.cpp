@@ -81,6 +81,8 @@ std::multiset<uint8_t> cvdice::DiceProc::getBasicDicePips(cvdice::JpegFile *jpeg
             std::for_each(diceAndPipValues.begin(), diceAndPipValues.end(), [&diceAndPipsSet](auto pair) {
                 diceAndPipsSet.insert(static_cast<uint8_t>(pair.second));
             });
+
+            return nullptr;
         }
     };
 

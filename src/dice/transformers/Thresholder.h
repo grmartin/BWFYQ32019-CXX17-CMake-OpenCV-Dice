@@ -13,9 +13,9 @@ namespace cvdice::transformers {
         int type = cv::ThresholdTypes::THRESH_TOZERO;
         int value = 0;
 
-        int const max_type = 4;
-        int const max_value = 255;
-        int const max_binary_value = 255;
+        const int max_type = 4;
+        const int max_value = 255;
+        const int max_binary_value = 255;
 
     public:
         explicit Thresholder(int type = cv::ThresholdTypes::THRESH_TOZERO, int value = 0) : Xformer() {
@@ -33,6 +33,22 @@ namespace cvdice::transformers {
         void setValue(int valueVal) {
             value = valueVal;
             this->update();
+        }
+
+        int getType() const {
+            return type;
+        }
+
+        int getValue() const {
+            return value;
+        }
+
+        const int getMaxType() const {
+            return max_type;
+        }
+
+        const int getMaxValue() const {
+            return max_value;
         }
     };
 }

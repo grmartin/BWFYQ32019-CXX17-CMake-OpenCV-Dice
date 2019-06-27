@@ -67,8 +67,8 @@ namespace cvdice::transformers {
     class Contouring : public Xformer {
         int retr = 0;
         int approx = 0;
-        int max_retr = 4;
-        int max_approx = 3; // x = (y+1)
+        const int max_retr = 4;
+        const int max_approx = 3; // x = (y+1)
 
     public:
         explicit Contouring(int retr = 0, int approx = 0) : Xformer() {
@@ -78,7 +78,7 @@ namespace cvdice::transformers {
 
         void performUpdate() override;
 
-        std::function<void(types::contours::DataListenerEvent)> receivedDataListener;
+        std::function<std::any(types::contours::DataListenerEvent)> receivedDataListener;
 
         void setRetr(int retrVal) {
             retr = retrVal;
@@ -88,6 +88,22 @@ namespace cvdice::transformers {
         void setApprox(int approxVal) {
             approx = approxVal;
             this->update();
+        }
+
+        int getRetr() const {
+            return retr;
+        }
+
+        int getApprox() const {
+            return approx;
+        }
+
+        int getMaxRetr() const {
+            return max_retr;
+        }
+
+        int getMaxApprox() const {
+            return max_approx;
         }
     };
 };
