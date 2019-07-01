@@ -24,6 +24,6 @@ else ()
     set(CVD_OTHER true)
 endif ()
 
-if (CVD_MSWIN OR CVD_MSWSL OR CVD_OTHER)
+if (CVD_MSWSL OR CVD_OTHER)
     message(FATAL_ERROR "Current OS Status: ***UNSUPPORTED***")
 endif ()

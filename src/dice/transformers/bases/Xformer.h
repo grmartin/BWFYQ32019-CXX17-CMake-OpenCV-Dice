@@ -9,6 +9,8 @@
 
 #include <functional>
 
+#include "../../../annotation/MSSupport.h"
+
 #include <opencv2/core/mat.hpp>
 
 #define CHAIN_XFORMER(first, second) first->chainTo = [&second](cvdice::transformers::Identifiable* inputXformer, cv::Mat mat) { \

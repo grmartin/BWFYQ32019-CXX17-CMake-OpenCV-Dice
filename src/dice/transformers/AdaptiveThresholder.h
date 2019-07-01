@@ -61,6 +61,34 @@ namespace cvdice::transformers {
             c = cVal;
             this->update();
         }
+
+        int getType() const {
+            return type;
+        }
+
+        int getMethod() const {
+            return method;
+        }
+
+        int getBlockSize() const {
+            return blockSize;
+        }
+
+        double getC() const {
+            return c;
+        }
+
+        const int getMaxBlockSize() const {
+            return max_block_size;
+        }
+
+        const std::set<std::pair<const char *, int>> &getThresholdTypes() const {
+            return thresholdTypes;
+        }
+
+        const std::set<std::pair<const char *, int>> &getThresholdMethods() const {
+            return thresholdMethods;
+        }
     };
 }
 #endif //CVDICE_ADAPTIVETHRESHOLDER_H

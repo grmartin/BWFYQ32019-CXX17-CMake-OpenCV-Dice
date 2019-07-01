@@ -52,8 +52,8 @@ int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *
 
     auto imageOrigin = NEW_XFORMER_AUTO(transformers::ImageOrigin, jpeg->matrix, false);
     auto colorer = NEW_XFORMER_AUTO(transformers::Colorer, 1);
-//    auto thresholder = NEW_XFORMER_AUTO(transformers::AdaptiveThresholder, cv::THRESH_BINARY, cv::ADAPTIVE_THRESH_MEAN_C, 1, 11);
-    auto thresholder = new transformers::Thresholder(3, 218);
+    auto thresholder = NEW_XFORMER_AUTO(transformers::AdaptiveThresholder, cv::THRESH_BINARY, cv::ADAPTIVE_THRESH_MEAN_C, 1, 11);
+//    auto thresholder = new transformers::Thresholder(3, 218);
     auto edger = NEW_XFORMER_AUTO(transformers::Edger);
     auto contouring = NEW_XFORMER_AUTO(transformers::Contouring, cv::RetrievalModes::RETR_CCOMP, 2);
     transformers::Terminus *terminus = NEW_XFORMER_AUTO(transformers::Terminus, [&](cv::Mat image) { imagePipelineTermination(mainWindowPtr, terminus, image); });
@@ -76,24 +76,25 @@ int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *
         bindAndDelegateE(toolbar, xformer, fn);
     };
 
+    edger->enabled = false;
+    contouring->enabled = false;
+
     // Colorer
     bindAndDelegateE(new CVQTImageToolbar("Color Value:", colorer->getValue(), 0, colorer->validValues.size() - 1, colorer->enabled), colorer, [&](QWidget *sender, int value){ colorer->setValue(value); });
 
     // Thresholder
-    bindAndDelegateE(new CVQTImageToolbar("Thresh Type:", thresholder->getType(), 0, thresholder->getMaxType(), thresholder->enabled), thresholder,  [&](QWidget *sender, int value){ thresholder->setType(value); });
-    bindAndDelegateD(new CVQTImageToolbar("Thresh Value:", thresholder->getValue(), 0, thresholder->getMaxValue(), thresholder->enabled), thresholder, [&](QWidget *sender, int value){ thresholder->setValue(value); });
+//    bindAndDelegateE(new CVQTImageToolbar("Thresh Type:", thresholder->getType(), 0, thresholder->getMaxType(), thresholder->enabled), thresholder,  [&](QWidget *sender, int value){ thresholder->setType(value); });
+//    bindAndDelegateD(new CVQTImageToolbar("Thresh Value:", thresholder->getValue(), 0, thresholder->getMaxValue(), thresholder->enabled), thresholder, [&](QWidget *sender, int value){ thresholder->setValue(value); });
 
     // Edger
     bindAndDelegateE(new CVQTImageToolbar("Canny Kern:", edger->getKernelSize(), 0, edger->getMaxKernelSize(), edger->enabled), edger,  [&](QWidget *sender, int value){ edger->setKernelSize(value); });
     bindAndDelegateD(new CVQTImageToolbar("Canny Thresh Value:", edger->getThresholdValue(), 0, edger->getMaxThreshold(), edger->enabled), edger, [&](QWidget *sender, int value){ edger->setThresholdValue(value); });
     bindAndDelegateD(new CVQTImageToolbar("Canny Ratio:", edger->getRatio(), 0, edger->getMaxRatio(), edger->enabled), edger, [&](QWidget *sender, int value){ edger->setRatio(value); });
 
-
     // Contouring
     bindAndDelegateE(new CVQTImageToolbar("Retrieval Mode:", contouring->getRetr(), 0, contouring->getMaxRetr(), contouring->enabled), contouring,  [&](QWidget *sender, int value){ contouring->setRetr(value); });
     bindAndDelegateD(new CVQTImageToolbar("Approx Type:", contouring->getApprox(), 0, contouring->getMaxApprox(), contouring->enabled), contouring, [&](QWidget *sender, int value){ contouring->setApprox(value); });
 
-    edger->enabled = false;
 
     contouring->receivedDataListener = [blackColor, whiteColor, jpeg](transformers::types::contours::DataListenerEvent dataEvent) {
         int minimalDepth = MAX(-1, dataEvent.depth - 1); // this should filter us to only our subjects, the pips and dice faces.

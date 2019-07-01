@@ -39,12 +39,8 @@ if (CMAKE_BUILD_TYPE STREQUAL Testing)
     set(CVD_TESTING true)
 endif ()
 
-# MSVC 2019 has std::filesystem, Apple as of Mojave does not so we must include Boost::filesystem, GCC also has it in a
-# differnet place and support is shaky in 7 so lets go boost there too.
-
 if (CVD_MSWIN)
-    set(CVDICE_CMAKE_FIND_PATHS ../stock/OpenCV/Win64/opencv/build/x64/vc15/lib ${CVDICE_FIND_PATHS})
-    include_directories(SYSTEM ../stock/OpenCV/Win64/opencv/sources/3rdparty)
+    set(CVD_USE_BOOST_FS true)
 elseif (CVD_MACOS)
     set(CVD_USE_BOOST_FS true)
     set(CVD_USE_QT5 true)
@@ -210,7 +206,10 @@ if ("${CVD_USE_QT5}")
 endif ()
 #            dice/ui/ModalitySelectionWindow.cpp dice/ui/ModalitySelectionWindow.h dice/ui/ModalitySelectionWindow.ui
 
-add_executable(CVDiceAnnotator annotation/main.cpp annotation/VecByte.h annotation/Chunk.h annotation/Strings.h)
+add_executable(CVDiceAnnotator
+        annotation/main.cpp
+        annotation/VecByte.h annotation/Chunk.h annotation/Strings.h
+        annotation/MSSupport.h)
 
 add_library(LibCVDiceAnnotation STATIC
         annotation/JpegAnnotation.cpp annotation/JpegAnnotation.h)

@@ -40,20 +40,20 @@ void cvdice::transformers::Contouring::performUpdate() {
             return findDepth(curr[HIER_PARENT], depth+1);
         };
 
-        for (int i = 0; i < contours.size(); i++) {
+        for (types::contours::Contours::size_type i = 0; i < contours.size(); i++) {
             auto moments = cv::moments(contours[i], true);
             auto contour = types::contours::Contour{
-                .index = i,
-                .points =  contours[i],
+                STRUKEY(index) static_cast<int>(i),
+                STRUKEY(points) contours[i],
                 // `Point2d` is 2xDouble not 2-Dimension.
-                .center = cv::Point2d(moments.m10 / moments.m00, moments.m01 / moments.m00),
-                .moments = moments,
-                .hierarchy = {
-                    .depth = findDepth(i, 0),
-                    .next = hierarchy[i][HIER_NEXT],
-                    .previous = hierarchy[i][HIER_PREV],
-                    .firstChild = hierarchy[i][HIER_1ST_CH],
-                    .parent = hierarchy[i][HIER_PARENT]
+                STRUKEY(center) cv::Point2d(moments.m10 / moments.m00, moments.m01 / moments.m00),
+                STRUKEY(moments) moments,
+                STRUKEY(hierarchy) {
+                    STRUKEY(depth) findDepth(i, 0),
+                    STRUKEY(next) hierarchy[i][HIER_NEXT],
+                    STRUKEY(previous) hierarchy[i][HIER_PREV],
+                    STRUKEY(firstChild) hierarchy[i][HIER_1ST_CH],
+                    STRUKEY(parent) hierarchy[i][HIER_PARENT]
                 }
             };
 
@@ -69,9 +69,9 @@ void cvdice::transformers::Contouring::performUpdate() {
         }
 
         struct types::contours::DataListenerEvent evt = types::contours::DataListenerEvent{
-            .depth = completeDepth,
-            .contours = processedContours,
-            .sourceImage = &display
+            STRUKEY(depth) completeDepth,
+            STRUKEY(contours) processedContours,
+            STRUKEY(sourceImage) &display
         };
 
         this->arbitraryValues["types::contours::DataListenerEvent"] = std::make_pair(evt, this->receivedDataListener(evt));

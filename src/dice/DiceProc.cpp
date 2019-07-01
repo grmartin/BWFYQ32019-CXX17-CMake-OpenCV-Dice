@@ -4,13 +4,13 @@
 
 #include "DiceProc.h"
 
-#include "dice/transformers/bases/Xformer.h"
+#include "transformers/bases/Xformer.h"
 
-#include "dice/transformers/ImageOrigin.h"
-#include "dice/transformers/Colorer.h"
-#include "dice/transformers/Thresholder.h"
-#include "dice/transformers/Contouring.h"
-#include "dice/transformers/Edger.h"
+#include "transformers/ImageOrigin.h"
+#include "transformers/Colorer.h"
+#include "transformers/Thresholder.h"
+#include "transformers/Contouring.h"
+#include "transformers/Edger.h"
 
 #include <opencv2/imgproc.hpp>
 

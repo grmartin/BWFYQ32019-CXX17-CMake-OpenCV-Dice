@@ -7,7 +7,6 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <utility>
-#include <dice/ui/widgets/CVQTPicker.h>
 
 #include "Colorer.h"
 #include "../JpegFile.h"

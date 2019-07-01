@@ -10,8 +10,8 @@
 #include <map>
 #include <any>
 
-#define NEW_XFORMER(x, y, z...) ([&](){ auto tmp = new x(z); tmp->setIdentifierKey(y); return tmp; })()
-#define NEW_XFORMER_AUTO(x, z...) ([&](){ auto tmp = new x(z); tmp->setIdentifierKey(#x); return tmp; })()
+#define NEW_XFORMER(x, y, ...) ([&](){ auto tmp = new x(__VA_ARGS__); tmp->setIdentifierKey(y); return tmp; })()
+#define NEW_XFORMER_AUTO(x, ...) ([&](){ auto tmp = new x(__VA_ARGS__); tmp->setIdentifierKey(#x); return tmp; })()
 
 namespace cvdice::transformers {
     class Identifiable {

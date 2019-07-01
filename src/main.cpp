@@ -22,7 +22,7 @@
 using namespace cvdice;
 using namespace cv;
 
-constexpr std::string_view primaryWindowName = "Experimentation Window"; // NOLINT(cert-err58-cpp)
+constexpr auto primaryWindowName = "Experimentation Window";
 
 int main(int argc, char *argv[], char *envp[]) {
     std::string windowName = std::string{primaryWindowName};

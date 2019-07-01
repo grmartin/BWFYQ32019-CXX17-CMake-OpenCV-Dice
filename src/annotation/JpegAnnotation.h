@@ -3,7 +3,7 @@
 //
 // Created by Glenn R. Martin on 4/29/2019.
 //
-
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 
@@ -14,6 +14,8 @@ namespace fs = boost::filesystem;
 #include <filesystem>
 namespace fs = std::filesystem;
 #endif
+
+#include "MSSupport.h"
 
 #ifndef CVDICE_JPEGANNOTATION_H
 #define CVDICE_JPEGANNOTATION_H
