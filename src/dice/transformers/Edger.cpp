@@ -20,6 +20,7 @@ void cvdice::transformers::Edger::performUpdate() {
         display = cv::Scalar::all(0);
         source_image.copyTo(display, detected_edges);
     } catch (std::exception &e) {
+        UNUSED_REF(e);
         Xformer::update(source_image);
         return;
     }

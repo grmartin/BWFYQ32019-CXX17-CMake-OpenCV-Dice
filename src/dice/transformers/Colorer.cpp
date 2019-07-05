@@ -37,7 +37,7 @@ void cvdice::transformers::Colorer::performUpdate() {
         std::cout << "Color Conversion: [" << value << "]=" << this->validValues[value] << std::endl;
         try {
             cv::cvtColor(source_image.clone(), display, this->validValues[value], 3);
-        } catch (cv::Exception &ignored) { return; }
+        } catch (cv::Exception &ignored) { UNUSED_REF(ignored); return; }
     }
 
     Xformer::update(display);

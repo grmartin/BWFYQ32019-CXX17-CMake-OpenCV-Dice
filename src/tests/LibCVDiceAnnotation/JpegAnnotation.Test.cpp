@@ -95,9 +95,9 @@ TEST_CASE("jpeganno::JpegAnnotation", "[library]") {
         return valueInts;
     };
 
-#define MARKER(sz1, sz2, values...) { 0xFF, 0xED, sz1, sz2,                              \
+#define MARKER(sz1, sz2, ...) { 0xFF, 0xED, sz1, sz2,                              \
                                       0x47, 0x52, 0x4D, 0x3A, 0x43, 0x56, 0x44, 0x3A,    \
-                                      values                                             \
+                                      __VA_ARGS__                                        \
                                     }
 
     std::function<bool(VecByte, std::vector<unsigned char>)> subsection_equality =

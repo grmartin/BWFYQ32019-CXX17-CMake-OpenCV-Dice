@@ -33,7 +33,7 @@ cvdice::JpegFile::JpegFile(std::ifstream &stream, const std::vector<uint8_t> &ex
 std::ostream &cvdice::operator<<(std::ostream &os, const cvdice::JpegFile &file) {
     auto values = file.expectedPips;
 
-    os << "matrix: " << file.matrix.type() <<"/" << file.matrix.total() << ", expectedPips: |";
+    os << "matrix: " << file.matrix.type() << "/" << file.matrix.total() << ", expectedPips: |";
 
     algorithm::for_each_i(values.begin(), values.end(), [&os](uint8_t value, auto i){
         i == 0 ? (os << static_cast<unsigned>(value)) : (os << "," << static_cast<unsigned>(value));

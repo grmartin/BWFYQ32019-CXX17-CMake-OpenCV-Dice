@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.13)
 message(STATUS "Initializing Hunter.")
 include("cmake/ThirdParty/HunterGate.cmake")
 HunterGate(
-        URL "https://github.com/ruslo/hunter/archive/v0.23.165.tar.gz"
-        SHA1 "5a73f91df5f6109c0bb1104d0c0ee423f7bece79"
+        URL "https://github.com/ruslo/hunter/archive/v0.23.198.tar.gz"
+        SHA1 "f44b698691eedfe9d1ee6763a6fb9b4af7756c24"
 )
 
 project(CVDice
@@ -17,8 +17,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-
-set(CVDICE_CMAKE_FIND_PATHS ./ ./lib/* ../stock/*)
 
 set(CVDICE_SRC_ROOT ${PROJECT_SOURCE_DIR})
 
@@ -41,6 +39,14 @@ endif ()
 
 if (CVD_MSWIN)
     set(CVD_USE_BOOST_FS true)
+    message(STATUS "Instructing MSVC++ to use C++17")
+    add_compile_options(/std:c++17 /wd4068)
+
+    if (CVD_MSWIN)
+        # error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in main.cpp.obj
+        add_compile_options(/DEBUG /Zi /MDd /D_ITERATOR_DEBUG_LEVEL=2)
+    endif()
+
 elseif (CVD_MACOS)
     set(CVD_USE_BOOST_FS true)
     set(CVD_USE_QT5 true)
@@ -213,6 +219,21 @@ add_executable(CVDiceAnnotator
 
 add_library(LibCVDiceAnnotation STATIC
         annotation/JpegAnnotation.cpp annotation/JpegAnnotation.h)
+
+foreach(project CVDiceBase LibCVDiceAnnotation)
+    message(STATUS "Project ${project} set to C++17")
+    set_target_properties(${project}
+        PROPERTIES
+        # Enable C++17 standard compliance
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED ON
+    )
+    if (CVD_MSWIN)
+        set_property(TARGET ${project}
+                APPEND
+                PROPERTY CXX_FLAGS "/std:c++17")
+    endif()
+endforeach()
 
 # TARGETS > LINKING ----------------------------------------------------------------------------------------------------
 

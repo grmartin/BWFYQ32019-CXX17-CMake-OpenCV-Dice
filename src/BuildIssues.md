@@ -1,10 +1,55 @@
 # All
 
-# DEV NOTE: Breakpointing
+## *DEV NOTE:* Breakpointing
 Clang seems to refuse to breakpoint at times... You can forse it by using the right signal (on x86/64 CPUS):
 ```c
         __asm__ volatile("int $0x03");
 ```
+
+# Windows
+
+## Cannot find C or CXX compiler
+```
+====================[ Build | CVDice | Debug (VS19) ]===========================
+-- Initializing Hunter.
+-- The C compiler identification is unknown
+-- The CXX compiler identification is unknown
+CMake Error at CMakeLists.txt:10 (project):
+  The CMAKE_C_COMPILER:
+
+    C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/VC/Tools/MSVC/14.10.25017/bin/HostX86/x86/cl.exe
+
+  is not a full path to an existing compiler tool.
+
+  To use the NMake generator with Visual C++, cmake must be run from a shell
+  that can use the compiler cl from the command line.  This environment is
+  unable to invoke the cl compiler.  To fix this problem, run cmake from the
+  Visual Studio Command Prompt (vcvarsall.bat).
+
+  Tell CMake where to find the compiler by setting either the environment
+  variable "CC" or the CMake cache entry CMAKE_C_COMPILER to the full path to
+  the compiler, or to the compiler name if it is in the PATH.
+
+
+CMake Error at CMakeLists.txt:10 (project):
+  The CMAKE_CXX_COMPILER:
+
+    C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/VC/Tools/MSVC/14.10.25017/bin/HostX86/x86/cl.exe
+
+  is not a full path to an existing compiler tool.
+
+  To use the NMake generator with Visual C++, cmake must be run from a shell
+  that can use the compiler cl from the command line.  This environment is
+  unable to invoke the cl compiler.  To fix this problem, run cmake from the
+  Visual Studio Command Prompt (vcvarsall.bat).
+
+  Tell CMake where to find the compiler by setting either the environment
+  variable "CXX" or the CMake cache entry CMAKE_CXX_COMPILER to the full path
+  to the compiler, or to the compiler name if it is in the PATH.
+```
+
+Either your C/C++ compiler is missing (should be 15.7+/VS2017 BuildTools) or has moved. It moves sometimes when updates are applied. Remove all intermediate files and CMakeCaches and try again.
+
 
 # Linux
 

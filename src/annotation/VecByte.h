@@ -71,7 +71,9 @@ namespace jpeganno::vecbyte {
         std::streampos fileSize = file.tellg();
         file.seekg(0, std::ios::beg);
 
-        vec.reserve(fileSize);
+        if (fileSize > 0) {
+            vec.reserve((unsigned)fileSize);
+        }
         std::for_each(
             std::istreambuf_iterator<char>(file),
             std::istreambuf_iterator<char>(),

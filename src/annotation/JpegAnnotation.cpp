@@ -1,4 +1,3 @@
-#include <climits>
 //
 // Created by Glenn R. Martin on 4/29/2019.
 //
@@ -7,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <map>
+#include <limits>
 
 #include "JpegAnnotation.h"
 #include "Endian.h"
@@ -28,8 +28,10 @@ typedef  uint64_t stm_off_t;
 // `sizeof` returns number of chars something makes up... thus in R = sizeof(T), R is (R*CHAR_BIT) bits large. If CHAR_BIT isnt 8... were packed wrong.
 static_assert(CHAR_BIT == 8, "This platform is strange... a Char should be 8 bits... Type assumptions will be wrong...");
 
+static_assert(sizeof(std::streamoff) == sizeof(std::streamsize),
+              "Stream positioning will blow up. Abend.");
 static_assert(
-        sizeof(stm_off_t) >= (sizeof(std::streamoff) == sizeof(std::streamsize)),
+        sizeof(stm_off_t) >= sizeof(std::streamoff),
         "Stream positioning will blow up. Abend.");
 
 // Anywhere in the file 0xFF would be found as a NON-Atomic Unit Header it is escaped as 0xFF00.
@@ -134,13 +136,13 @@ std::vector<uint8_t> JpegAnnotation::parseExpectedValues(const fs::path &jpegFil
                 stream.read(reinterpret_cast<char*>(&contentMarker), sizeof(uint64_t));
                 if (contentMarker == typeMarker()) {
                     auto left = length - sizeof(uint16_t) - sizeof(uint64_t);
-                    auto numberSets = left / sizeof(union PackedSet);
+                    size_t numberSets = left / sizeof(union PackedSet);
 
 #define checkSetN(s, n) \
     if (s.st.value ## n == 0 ) continue; \
     returnValue.push_back(s.st.value ## n)
 
-                    for (auto i = 0; numberSets > i; i++) {
+                    for (size_t i = 0; numberSets > i; i++) {
                         uint32_t set;
                         stream.read(reinterpret_cast<char*>(&set), sizeof(uint32_t));
 
@@ -200,7 +202,9 @@ void JpegAnnotation::writeExpectedValues(const fs::path &jpegFilePath, const std
     stm_off_t fSize = stream.tellg();
     stream.seekg(0, std::ios::beg);
 
-    fileArray.reserve(fSize);
+    if (fSize > 0) {
+        fileArray.reserve((const unsigned) fSize);
+    }
 
     stm_off_t pos = 0;
     std::for_each(
@@ -291,16 +295,16 @@ void JpegAnnotation::writeExpectedValues(const fs::path &jpegFilePath, const std
         newBytes.insert(newBytes.end(), structVec.begin(), structVec.end());
     });
 
-    uint16_t len = sizeof(uint16_t) + sizeof(typeMarker()) + newBytes.size();
+    size_t len = sizeof(uint16_t) + sizeof(typeMarker()) + newBytes.size();
     VecByte blockBytes;
     blockBytes.reserve(getHsz<VecByte::size_type>() + len);
     blockBytes.push_back(std::byte{JPEG_PRECURSOR});
     blockBytes.push_back(std::byte{CVDICE_MARKER});
-    append(blockBytes, structToVecByte(TO_FILE_ORDER_16(len)));
+    append(blockBytes, structToVecByte(TO_FILE_ORDER_16((unsigned)len)));
     append(blockBytes, structToVecByte(typeMarker()));
     append(blockBytes, newBytes);
 
-    fileArray.insert(fileArray.begin() + eoiLocation.st, blockBytes.begin(), blockBytes.end());
+    fileArray.insert(fileArray.begin() + (int)eoiLocation.st, blockBytes.begin(), blockBytes.end());
 
     stream.open(jpegFilePath.generic_string(), streamFlags | std::ios::trunc);
     stream.unsetf(std::ios::skipws);

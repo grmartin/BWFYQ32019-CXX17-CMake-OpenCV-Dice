@@ -3,6 +3,7 @@
 //
 
 #include <fstream>
+#include <algorithm>
 #include "ResourceReader.h"
 
 static RawByteVector loadResource(const std::string &resourceFileName) {
@@ -14,7 +15,9 @@ static RawByteVector loadResource(const std::string &resourceFileName) {
     std::streampos fileSize = file.tellg();
     file.seekg(0, std::ios::beg);
 
-    vec.reserve(fileSize);
+    if (fileSize > 0) {
+        vec.reserve((unsigned)fileSize);
+    }
     std::for_each(
             std::istreambuf_iterator<char>(file),
             std::istreambuf_iterator<char>(),

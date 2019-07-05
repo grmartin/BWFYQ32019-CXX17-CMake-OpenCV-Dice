@@ -76,6 +76,7 @@ void cvdice::transformers::Contouring::performUpdate() {
 
         this->arbitraryValues["types::contours::DataListenerEvent"] = std::make_pair(evt, this->receivedDataListener(evt));
     } catch (std::exception &e) {
+        UNUSED_REF(e);
         display = source_image.clone();
     }
 

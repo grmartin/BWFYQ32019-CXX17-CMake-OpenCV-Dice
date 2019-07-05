@@ -6,7 +6,7 @@
 #define CVDICE_CHUNK_H
 
 #include <vector>
-#include <ctgmath>
+#include <cmath>
 #include <cstddef>
 
 namespace jpeganno::util::chunk {

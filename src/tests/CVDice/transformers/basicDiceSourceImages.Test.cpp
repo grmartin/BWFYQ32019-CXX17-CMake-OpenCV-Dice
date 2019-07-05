@@ -27,12 +27,12 @@ TEST_CASE("cvdice::transformers Basic Dice", "[transformers]") {
         REQUIRE(jpeg->expectedPips.size() > 0);
 
         auto result = cvdice::DiceProc::getBasicDicePips(jpeg, {
-            .colorerValue = 1,
-            .thresholderType = cv::ThresholdTypes::THRESH_TOZERO,
-            .thresholderValue = 218,
-            .contourMode = cv::RetrievalModes::RETR_CCOMP,
-            .contourApproximation = 2,
-            .epsilonDeviationDetectionPoly = 0.04
+            STRUKEY(colorerValue) 1,
+            STRUKEY(thresholderType) cv::ThresholdTypes::THRESH_TOZERO,
+            STRUKEY(thresholderValue) 218,
+            STRUKEY(contourMode) cv::RetrievalModes::RETR_CCOMP,
+            STRUKEY(contourApproximation) 2,
+            STRUKEY(epsilonDeviationDetectionPoly) 0.04
         });
 
         CAPTURE(result, jpeg->expectedPips);
@@ -46,12 +46,12 @@ TEST_CASE("cvdice::transformers Basic Dice", "[transformers]") {
         REQUIRE(jpeg->expectedPips.size() > 0);
 
         auto result = cvdice::DiceProc::getBasicDicePips(jpeg, {
-            .colorerValue = 1,
-            .thresholderType = cv::ThresholdTypes::THRESH_TOZERO,
-            .thresholderValue = 218,
-            .contourMode = cv::RetrievalModes::RETR_CCOMP,
-            .contourApproximation = 2,
-            .epsilonDeviationDetectionPoly = 0.04
+            STRUKEY(colorerValue) 1,
+            STRUKEY(thresholderType) cv::ThresholdTypes::THRESH_TOZERO,
+            STRUKEY(thresholderValue) 218,
+            STRUKEY(contourMode) cv::RetrievalModes::RETR_CCOMP,
+            STRUKEY(contourApproximation) 2,
+            STRUKEY(epsilonDeviationDetectionPoly) 0.04
         });
 
         CAPTURE(result, jpeg->expectedPips);
@@ -64,12 +64,12 @@ TEST_CASE("cvdice::transformers Basic Dice", "[transformers]") {
 //        REQUIRE(jpeg->expectedPips.size() > 0);
 //
 //        auto result = cvdice::utils::DiceProc::getBasicDicePips(jpeg, {
-//            .colorerValue = 1,
-//            .thresholderType = cv::ThresholdTypes::THRESH_TOZERO,
-//            .thresholderValue = 218,
-//            .contourMode = cv::RetrievalModes::RETR_CCOMP,
-//            .contourApproximation = 2,
-//            .epsilonDeviationDetectionPoly = 0.04
+//            STRUKEY(colorerValue) 1,
+//            STRUKEY(thresholderType) cv::ThresholdTypes::THRESH_TOZERO,
+//            STRUKEY(thresholderValue) 218,
+//            STRUKEY(contourMode) cv::RetrievalModes::RETR_CCOMP,
+//            STRUKEY(contourApproximation) 2,
+//            STRUKEY(epsilonDeviationDetectionPoly) 0.04
 //        });
 //
 //        CAPTURE(result, jpeg->expectedPips);
