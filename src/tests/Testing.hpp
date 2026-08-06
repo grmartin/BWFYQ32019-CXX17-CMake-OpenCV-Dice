@@ -10,7 +10,7 @@
 #include <functional>
 #include <sstream>
 
-#include "catch.hpp"
+#include "catch_amalgamated.hpp"
 
 #define SHOULD_NOT_BE_CALLED() FAIL("It is expected that we are never invoked.")
 #define SHOULD_NOT_DEFAULT() FAIL("It is expected that this switch never defaults.")

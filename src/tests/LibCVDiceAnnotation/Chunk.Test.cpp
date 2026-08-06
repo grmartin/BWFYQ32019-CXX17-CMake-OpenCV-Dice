@@ -1,7 +1,7 @@
 //
 // Created by Glenn R. Martin on 2019-05-03.
 //
-#include "../catch.hpp"
+#include "../Testing.hpp"
 #include "../../annotation/Chunk.h"
 
 #ifndef CVDICE_CHUNK_TEST_H

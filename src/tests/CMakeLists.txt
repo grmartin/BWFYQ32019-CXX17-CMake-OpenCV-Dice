@@ -9,7 +9,7 @@ if (CVD_TESTING)
     project(CVDiceTests)
 
     add_executable(CVDiceTests
-            main.cpp
+            catch_amalgamated.cpp catch_amalgamated.hpp
 
             ResourceReader.cpp ResourceReader.h
 
