@@ -55,10 +55,10 @@ Homebrew's `qt` formula is Qt 6 (`qt@5` is the separate, deprecated Qt 5 formula
 ### Linux (Debian-based)
 
 ```bash
-sudo apt install qt6-base-dev qt6-base-dev-tools
+sudo apt install qt6-base-dev qt6-base-dev-tools libqt6opengl6-dev
 ```
 
-That one package covers Core, Gui, Widgets, OpenGL, Concurrent, and Test — everything this project links against. Debian stable tends to trail the latest upstream Qt 6 release (e.g. Debian 13 "trixie" currently ships 6.8.x against an upstream 6.11.x) — that's expected and fine for this project.
+`qt6-base-dev` covers Core, Gui, Widgets, Concurrent, and Test, but Debian splits the `OpenGL` component's CMake config out into `libqt6opengl6-dev` separately — without it, `find_package(Qt6 ... COMPONENTS OpenGL)` fails with `Could NOT find Qt6OpenGL (missing: Qt6OpenGL_DIR)` even though `qt6-base-dev` is installed. Debian stable tends to trail the latest upstream Qt 6 release (e.g. Debian 13 "trixie" currently ships 6.8.x against an upstream 6.11.x) — that's expected and fine for this project.
 
 ## The Qt GUI: controls reference
 
