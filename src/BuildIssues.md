@@ -94,3 +94,22 @@ Output
 ```
 
 Older versions of QT5 like those in Debian dont support concise namespaces... `a::b::c` and they must be destructured or the OS Updated.
+
+## CMake Error: "opencv_imgcodecs" link interface contains OpenEXR::OpenEXR, but the target was not found
+
+```
+CMake Error at .../Install/lib/cmake/opencv5/OpenCVModules.cmake:102 (set_target_properties):
+  The link interface of target "opencv_imgcodecs" contains:
+
+    OpenEXR::OpenEXR
+
+  but the target was not found.
+
+Call Stack (most recent call first):
+  .../Install/lib/cmake/opencv5/OpenCVConfig.cmake:135 (include)
+  CMakeLists.txt:73 (find_package)
+```
+
+This happens if `libopenexr-dev` (or equivalent) is installed system-wide on the machine where Hunter *first* builds OpenCV. `OPENCV_FORCE_3RDPARTY_BUILD=ON` (see `cmake/Hunter/config.cmake`) makes OpenCV bundle its own zlib/libjpeg/libpng/etc., but it has no bundled copy of OpenEXR — so if a system OpenEXR happens to be present at Hunter's build time, `imgcodecs` autodetects and links it, baking `OpenEXR::OpenEXR` into the exported CMake config. Any later `find_package(OpenCV)` then fails unless that same OpenEXR target still exists.
+
+Don't chase this with `find_package(OpenEXR)` in this project's own `CMakeLists.txt` — that's a Linux-only patch for a Linux-only accident (a clean Windows/macOS box won't have OpenEXR installed, so it won't hit this at all, and even on Debian the fix drags in a further `find_dependency(ZLIB CONFIG)` that Debian's system zlib can't satisfy since it has no CMake config). The actual fix is `WITH_OPENEXR=OFF` in the Hunter `hunter_config(OpenCV ...)` block, which stops OpenCV from linking OpenEXR at all, everywhere — already applied. If this resurfaces, it means that flag got dropped or Hunter's cache under `~/.hunter` predates it; wipe the relevant `~/.hunter/_Base/.../OpenCV` cache dir and reconfigure.
