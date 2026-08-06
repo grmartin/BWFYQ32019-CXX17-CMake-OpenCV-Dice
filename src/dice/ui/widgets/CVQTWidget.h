@@ -9,8 +9,6 @@
 
 #include <QWidget>
 #include <QImage>
-#include <QPainter>
-#include <QPaintEvent>
 #include <QScrollArea>
 #include <QLabel>
 
@@ -23,16 +21,8 @@ class CVQTWidget : public QScrollArea {
     Q_OBJECT
 
     private:
-        QImage _img;
         QLabel* _label;
         Mat _mat;
-
-    protected:
-        void paintEvent(QPaintEvent * event) override {
-            QPainter painter(this);
-            painter.drawImage(QPoint(0, 0), _img, event->rect(), Qt::AutoColor);
-            painter.end();
-        }
 
     public:
         explicit CVQTWidget(QWidget *parent = nullptr) :
@@ -51,16 +41,19 @@ class CVQTWidget : public QScrollArea {
             switch (image.type()) {
                 case CV_8UC1: cvtColor(image, _mat, COLOR_GRAY2RGB); break;
                 case CV_8UC3: cvtColor(image, _mat, COLOR_BGR2RGB); break;
+                default: /* no-op */ break;
             }
 
             if (!_mat.isContinuous()) _mat = _mat.clone();
 
-            _img = QImage(_mat.data, _mat.cols, _mat.rows, _mat.cols * BYTES_PER, QImage::Format_RGB888);
+            // QPixmap::fromImage deep-copies, so the QImage can wrap _mat's
+            // bytes without outliving this call. The QLabel handles painting;
+            // no manual paintEvent (QScrollArea subclasses may only paint on
+            // viewport(), and the label repaints itself on setPixmap anyway).
+            QImage img(_mat.data, _mat.cols, _mat.rows, _mat.cols * BYTES_PER, QImage::Format_RGB888);
 
-            _label->setPixmap(QPixmap::fromImage(_img));
+            _label->setPixmap(QPixmap::fromImage(img));
             _label->adjustSize();
-
-            repaint();
         }
     };
 }}}
