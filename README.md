@@ -4,7 +4,7 @@
 
 This is a first attempt at creating a simple (I hope) application with OpenCV across all major Desktop Platforms.
 
-This project uses CMake and Hunter for package management and QT5 as a GUI.
+This project uses CMake and Hunter for package management (OpenCV is 5.0.0, pinned as an upstream tarball through a Hunter custom version — see `cmake/Hunter/config.cmake`) and Qt 6 as a GUI.
 
 Currently the plan is as follows (and subject to change):
 
@@ -12,7 +12,7 @@ Currently the plan is as follows (and subject to change):
 2. ~~Add in quick testing suite (Catch2 @ `./src/tests`): \[*COMPLETE*]~~
 3. ~~Build application to read pips off dice and compare to values. : \[*COMPLETE*]~~
 4. ~~Compilation Support for Linux. : \[*COMPLETE*]~~
-5. Compilation Support for Windows 10. (MSVC2019 support not possible yet due to OpenCV's lack of support): \[*WIP*]
+5. Compilation Support for Windows 10/11. (Originally blocked on OpenCV's lack of MSVC 2019 support — no longer an issue as of OpenCV 5, which supports MSVC 2017 19.14+/2019/2022. The GUI additionally needs MSVC 2022, a Qt 6 requirement — see Prerequisites.): \[*WIP*]
 6. Update to handle live images (on simple dice) : \[*PLANNED*]
 7. Improve as time goes on to detect different colors/types of pip-ed dice. : \[*PLANNED*]
 
