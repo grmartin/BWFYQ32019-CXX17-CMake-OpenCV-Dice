@@ -8,6 +8,7 @@
 #include <vector>
 #include <cstddef>
 #include <cstdint>
+#include <fstream>
 #include <climits>
 
 namespace jpeganno::vecbyte {

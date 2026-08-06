@@ -3,8 +3,9 @@ cmake_minimum_required(VERSION 3.13)
 message(STATUS "Initializing Hunter.")
 include("cmake/ThirdParty/HunterGate.cmake")
 HunterGate(
-        URL "https://github.com/ruslo/hunter/archive/v0.23.198.tar.gz"
-        SHA1 "f44b698691eedfe9d1ee6763a6fb9b4af7756c24"
+        URL "https://github.com/cpp-pm/hunter/archive/v0.26.10.tar.gz"
+        SHA1 "3d904b93ba684f0e671a2d44969a1a127abe3e66"
+        LOCAL
 )
 
 project(CVDice
@@ -97,38 +98,34 @@ else ()
     message(STATUS "Using std::filesystem")
 endif ()
 
-if ("${CVD_USE_QT5}") # https://doc.qt.io/qt-5/cmake-manual.html
-    message(STATUS "QT5 library status:")
+if ("${CVD_USE_QT5}") # https://doc.qt.io/qt-6/cmake-manual.html
+    message(STATUS "Qt6 library status:")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-    # if you want to bypass hunter please see:
-    #   https://github.com/Cockatrice/Cockatrice/issues/205#issuecomment-48788033
-    find_package(Qt5 CONFIG REQUIRED Widgets Concurrent Core Gui OpenGL Test)
+    # Hunter's own Qt package tops out at Qt 5.12.3 and can't be used as a
+    # fallback here -- Qt 6 moved its own build system to CMake, so that old
+    # (qmake-era) Hunter recipe doesn't carry forward. A system/package-manager
+    # Qt 6 install is required; see the "Prerequisites" section of the
+    # top-level README for per-OS install steps (Homebrew/vcpkg/apt).
+    find_package(Qt6 CONFIG REQUIRED COMPONENTS Widgets Concurrent Core Gui OpenGL Test)
 
-    if ("${Qt5Widgets_FOUND}")
-        message(STATUS "    System Installation Found.")
-    else ()
-        message(STATUS "    Invoking Hunter.")
-        hunter_add_package(Qt COMPONENTS qtbase)
-    endif ()
-
-    message(STATUS "    QT5::Core Version: ${Qt5Core_VERSION}")
-    message(STATUS "    QT5::Core Version: ${Qt5Core_VERSION}")
-    message(STATUS "    QT5::Gui Version: ${Qt5Gui_VERSION}")
-    message(STATUS "    QT5::OpenGL Version: ${Qt5OpenGL_VERSION}")
+    message(STATUS "    Qt6::Core Version: ${Qt6Core_VERSION}")
+    message(STATUS "    Qt6::Widgets Version: ${Qt6Widgets_VERSION}")
+    message(STATUS "    Qt6::Gui Version: ${Qt6Gui_VERSION}")
+    message(STATUS "    Qt6::OpenGL Version: ${Qt6OpenGL_VERSION}")
 
     set(CVD_USE_QT5_VER_FOOTER_MSG "    (Ideally the above should match)")
 
     if (CVD_MACOS)
         # Have to link it manually because of cyclic dependencies in Qt
-        find_package(Qt5PrintSupport REQUIRED)
-        message(STATUS "    QT5::PrintSupport Version: ${Qt5PrintSupport_VERSION} [macOS Only]")
+        find_package(Qt6PrintSupport REQUIRED)
+        message(STATUS "    Qt6::PrintSupport Version: ${Qt6PrintSupport_VERSION} [macOS Only]")
 
         # Sometimes this is missing on macOS, this typically means an old OS or QT Version.
-        if (NOT TARGET Qt5::Widgets)
-            message(FATAL_ERROR "*** No Qt5::Widgets target ***")
+        if (NOT TARGET Qt6::Widgets)
+            message(FATAL_ERROR "*** No Qt6::Widgets target ***")
         else ()
-            message(STATUS "    Qt5::Widgets Target: Found [macOS Only]")
+            message(STATUS "    Qt6::Widgets Target: Found [macOS Only]")
         endif ()
 
         message(STATUS ${CVD_USE_QT5_VER_FOOTER_MSG})
@@ -145,7 +142,7 @@ endif ()
 function(linkGUI target mocit)
     if ("${CVD_USE_QT5}")
 
-        target_link_libraries(${target} PUBLIC Qt5::Widgets)
+        target_link_libraries(${target} PUBLIC Qt6::Widgets)
         target_compile_definitions(${target} PUBLIC CVD_USE_QT5=1)
         target_include_directories(${target} SYSTEM PUBLIC ${PROJECT_SOURCE_DIR}/dice/ui)
 
@@ -156,7 +153,7 @@ function(linkGUI target mocit)
 
         if (CVD_MACOS)
             target_link_libraries(${target} PUBLIC ${SECURITY_FRAMEWORK})
-            target_link_libraries(${target} PUBLIC Qt5::PrintSupport)
+            target_link_libraries(${target} PUBLIC Qt6::PrintSupport)
         endif ()
     endif ()
 endfunction()

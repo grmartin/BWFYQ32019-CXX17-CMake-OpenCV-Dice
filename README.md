@@ -22,6 +22,44 @@ Validate inter-operating system support:
 2. Linux (GCC/G++8)
 3. MSVC++ 15 (2017)
 
+## Prerequisites
+
+The GUI (`CVDiceQT`) needs **Qt 6** available as a system/package-manager install. Hunter (used for the other dependencies, see [`CLAUDE.md`](./CLAUDE.md)) can't provide it as a fallback here — its bundled Qt recipe only goes up to Qt 5.12.3 and Qt 6 changed build systems entirely, so that recipe doesn't carry forward. As of Qt 6.11 (the current release), install one of the following before configuring:
+
+### Windows 11
+
+Qt 6.11 requires **MSVC 2022** (Qt 6 dropped support for the MSVC 2017 toolset this project otherwise targets, so building the GUI means building with 2022 instead).
+
+Using [vcpkg](https://vcpkg.io/):
+
+```powershell
+vcpkg install qtbase[gui,widgets,opengl,concurrent,testlib]:x64-windows
+```
+
+Hunter already owns `CMAKE_TOOLCHAIN_FILE` for this project, so point CMake at the vcpkg install via `CMAKE_PREFIX_PATH` rather than vcpkg's own toolchain file:
+
+```powershell
+cmake -S src -B cmake-build-debug -DCMAKE_PREFIX_PATH="<vcpkg-root>\installed\x64-windows"
+```
+
+Alternatively, use the official [Qt Online Installer](https://www.qt.io/download-qt-installer-oss) (free Qt Account required) and select the MSVC 2022 64-bit kit.
+
+### macOS (Homebrew)
+
+```bash
+brew install qt
+```
+
+Homebrew's `qt` formula is Qt 6 (`qt@5` is the separate, deprecated Qt 5 formula). It installs into Homebrew's standard prefix, so `find_package(Qt6 ...)` should find it with no extra CMake flags.
+
+### Linux (Debian-based)
+
+```bash
+sudo apt install qt6-base-dev qt6-base-dev-tools
+```
+
+That one package covers Core, Gui, Widgets, OpenGL, Concurrent, and Test — everything this project links against. Debian stable tends to trail the latest upstream Qt 6 release (e.g. Debian 13 "trixie" currently ships 6.8.x against an upstream 6.11.x) — that's expected and fine for this project.
+
 ## Directory Structure
 
 - [`/src`](./src) - source code for `CVDice`

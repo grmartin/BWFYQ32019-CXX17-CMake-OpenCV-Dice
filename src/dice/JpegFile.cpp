@@ -2,6 +2,8 @@
 // Created by Glenn R. Martin on 2019-05-08.
 //
 
+#include <fstream>
+
 #include <opencv2/opencv.hpp>
 
 #include "JpegFile.h"
