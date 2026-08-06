@@ -39,13 +39,20 @@ protected:
     CVQTImageToolbarDelegate* _delegate;
 
 private slots:
+// The pragmas are CLion-only (its inspector flags these auto-connected
+// slots as unused); real compilers would warn "unknown pragma" under
+// -Wall, so hide them from anything but CLion's parser.
+#ifdef __CLION_IDE__
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+#endif
 
     void on_valueSlider_valueChanged(int value);
     void on_enabledCheckbox_stateChanged(int arg1);
 
+#ifdef __CLION_IDE__
 #pragma clang diagnostic pop
+#endif
 
 private:
     Ui::CVQTPicker *ui;

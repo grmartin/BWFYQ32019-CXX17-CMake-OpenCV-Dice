@@ -206,6 +206,11 @@ if ("${CVD_USE_QT6}")
 
             dice/ui/widgets/InvokeDelegate.h dice/ui/widgets/UiPredefine.h
             dice/ui/MainWindowListColDelegate.h dice/ui/CVQTTag.h)
+
+    # The Qt UI half only ever builds on macOS/Linux (Clang/GCC), so the flag
+    # needs no MSVC guard. Scoped to this target while the rest of the tree
+    # is not yet -Wall-clean.
+    target_compile_options(CVDiceQT PRIVATE -Wall)
 endif ()
 #            dice/ui/ModalitySelectionWindow.cpp dice/ui/ModalitySelectionWindow.h dice/ui/ModalitySelectionWindow.ui
 
