@@ -65,7 +65,11 @@ int cvdice::ui::QT6Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *
                 try { fn(sender, value); } catch (Exception& ignored) {}
                 toolbar->setValueLabel(QString::number(value));
             },
-            [=](QWidget *sender, bool enabled){ xformer->enabled = enabled; xformer->update(); }
+            // Same guard as the value path above: an Xformer left mid-chain in a
+            // state OpenCV rejects (e.g. Colorer disabled -> BGR reaching
+            // adaptiveThreshold, which asserts on non-CV_8UC1) must not abort()
+            // the app via an uncaught cv::Exception.
+            [=](QWidget *sender, bool enabled){ xformer->enabled = enabled; try { xformer->update(); } catch (Exception& ignored) {} }
         ));
 
         QString name = toolbar->objectName();
