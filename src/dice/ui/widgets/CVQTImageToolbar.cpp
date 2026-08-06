@@ -38,14 +38,14 @@ QSize CVQTImageToolbar::minimumSizeHint() const {
     return ui->horizontalLayoutWidget->minimumSizeHint();
 }
 
-void CVQTImageToolbar::hideEnabled() {
+void CVQTImageToolbar::hideEnabled() const {
     QSizePolicy szPol = ui->enabledCheckbox->sizePolicy();
     szPol.setRetainSizeWhenHidden(true);
     ui->enabledCheckbox->setSizePolicy(szPol);
     ui->enabledCheckbox->setHidden(true);
 }
 
-void CVQTImageToolbar::setValueLabel(const QString& string) {
+void CVQTImageToolbar::setValueLabel(const QString& string) const {
     ui->valueLabel->setText(string);
 }
 
