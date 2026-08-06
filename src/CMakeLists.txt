@@ -50,10 +50,10 @@ if (CVD_MSWIN)
 
 elseif (CVD_MACOS)
     set(CVD_USE_BOOST_FS true)
-    set(CVD_USE_QT5 true)
+    set(CVD_USE_QT6 true)
 elseif (CVD_LINUX)
     set(CVD_USE_BOOST_FS true)
-    set(CVD_USE_QT5 true)
+    set(CVD_USE_QT6 true)
 endif ()
 
 message_var("CMake Version" CMAKE_VERSION)
@@ -68,7 +68,7 @@ message(STATUS "")
 # MANDATORY COMPONENTS -------------------------------------------------------------------------------------------------
 
 # TODO: See if we can conditionally rebuild OpenCV only if its not found locally rather than assuming it is to be
-#   via hunter... like we do QT5.
+#   via hunter... like we do QT6.
 hunter_add_package(OpenCV COMPONENTS)
 find_package(OpenCV CONFIG REQUIRED)
 
@@ -98,7 +98,7 @@ else ()
     message(STATUS "Using std::filesystem")
 endif ()
 
-if ("${CVD_USE_QT5}") # https://doc.qt.io/qt-6/cmake-manual.html
+if ("${CVD_USE_QT6}") # https://doc.qt.io/qt-6/cmake-manual.html
     message(STATUS "Qt6 library status:")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -114,7 +114,7 @@ if ("${CVD_USE_QT5}") # https://doc.qt.io/qt-6/cmake-manual.html
     message(STATUS "    Qt6::Gui Version: ${Qt6Gui_VERSION}")
     message(STATUS "    Qt6::OpenGL Version: ${Qt6OpenGL_VERSION}")
 
-    set(CVD_USE_QT5_VER_FOOTER_MSG "    (Ideally the above should match)")
+    set(CVD_USE_QT6_VER_FOOTER_MSG "    (Ideally the above should match)")
 
     if (CVD_MACOS)
         # Have to link it manually because of cyclic dependencies in Qt
@@ -128,22 +128,22 @@ if ("${CVD_USE_QT5}") # https://doc.qt.io/qt-6/cmake-manual.html
             message(STATUS "    Qt6::Widgets Target: Found [macOS Only]")
         endif ()
 
-        message(STATUS ${CVD_USE_QT5_VER_FOOTER_MSG})
+        message(STATUS ${CVD_USE_QT6_VER_FOOTER_MSG})
 
         # Modern QT requires Security.framework to detect/handle Sandboxing, so lets link to that too.
         find_library(SECURITY_FRAMEWORK Security)
     else ()
-        message(STATUS ${CVD_USE_QT5_VER_FOOTER_MSG})
+        message(STATUS ${CVD_USE_QT6_VER_FOOTER_MSG})
     endif ()
 endif ()
 
 # TARGET CONFIGURATION HELPERS -----------------------------------------------------------------------------------------
 
 function(linkGUI target mocit)
-    if ("${CVD_USE_QT5}")
+    if ("${CVD_USE_QT6}")
 
         target_link_libraries(${target} PUBLIC Qt6::Widgets)
-        target_compile_definitions(${target} PUBLIC CVD_USE_QT5=1)
+        target_compile_definitions(${target} PUBLIC CVD_USE_QT6=1)
         target_include_directories(${target} SYSTEM PUBLIC ${PROJECT_SOURCE_DIR}/dice/ui)
 
         if (${mocit})
@@ -193,10 +193,10 @@ add_library(CVDiceBase STATIC
         dice/transformers/ImageOrigin.cpp dice/transformers/ImageOrigin.h
         dice/DiceProc.cpp dice/DiceProc.h)
 
-if ("${CVD_USE_QT5}")
+if ("${CVD_USE_QT6}")
     add_library(CVDiceQT STATIC
             # UI
-            dice/ui/QT5Main.cpp dice/ui/QT5Main.h
+            dice/ui/QT6Main.cpp dice/ui/QT6Main.h
 
             dice/ui/MainWindow.cpp dice/ui/MainWindow.h dice/ui/MainWindow.ui
 
@@ -245,7 +245,7 @@ linkAll(CVDiceBase)
 linkAll(CVDiceAnnotator)
 linkAll(LibCVDiceAnnotation)
 
-if ("${CVD_USE_QT5}")
+if ("${CVD_USE_QT6}")
     target_link_libraries(CVDiceQT PRIVATE CVDiceBase)
 
     target_link_libraries(CVDice PRIVATE CVDiceQT)

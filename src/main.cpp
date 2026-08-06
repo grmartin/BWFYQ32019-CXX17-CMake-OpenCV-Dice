@@ -3,8 +3,8 @@
 
 #include <opencv2/opencv.hpp>
 
-#if CVD_USE_QT5
-#   include "dice/ui/QT5Main.h"
+#if CVD_USE_QT6
+#   include "dice/ui/QT6Main.h"
 #endif
 
 #include "annotation/JpegAnnotation.h"
@@ -32,7 +32,7 @@ int main(int argc, char *argv[], char *envp[]) {
     const String keys =
         "{help h usage ? |                    | print this message   }"
         "{@input         | <none>             | input image          }"
-        #if CVD_USE_QT5
+        #if CVD_USE_QT6
         "{noQT           |                    | Disable QT           }"
         #endif
         ;
@@ -50,11 +50,11 @@ int main(int argc, char *argv[], char *envp[]) {
 
     std::cout << "Got: " << *file << std::endl;
 
-#if CVD_USE_QT5
+#if CVD_USE_QT6
     bool noQT = parser.has("noQT");
 
     if (!noQT) {
-        return cvdice::ui::QT5Main(argc, argv, envp, file);
+        return cvdice::ui::QT6Main(argc, argv, envp, file);
     }
 #endif
 

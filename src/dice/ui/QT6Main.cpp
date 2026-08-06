@@ -2,7 +2,7 @@
 // Created by Glenn R. Martin on 2019-05-10.
 //
 
-#include "QT5Main.h"
+#include "QT6Main.h"
 #include "MainWindow.h"
 
 #include <QApplication>
@@ -37,7 +37,7 @@ void cvdice::ui::imagePipelineTermination(MainWindow* mainWindow, transformers::
     }
 }
 
-int cvdice::ui::QT5Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *jpeg) {
+int cvdice::ui::QT6Main(int argc, char *argv[], char *envp[], cvdice::JpegFile *jpeg) {
     const auto blackColor = cv::Scalar(0,0,0);
     const auto whiteColor = cv::Scalar(255,255,255);
 
