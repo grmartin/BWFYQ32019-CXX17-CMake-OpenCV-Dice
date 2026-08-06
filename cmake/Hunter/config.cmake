@@ -57,6 +57,17 @@ hunter_config(
 # OpenCV 5 requires C++17 -- the same standard this project already builds
 # with -- and its compiler floor (MSVC 2017 19.14 / GCC 8 / Clang 9)
 # matches this project's documented minimums.
+#
+# WITH_OPENEXR=OFF: unlike the bundled zlib/libjpeg/libpng/etc. covered by
+# OPENCV_FORCE_3RDPARTY_BUILD, OpenEXR has no bundled 3rdparty copy in OpenCV's
+# source tree -- imgcodecs only links it when a system OpenEXR install is
+# autodetected at Hunter's build time. That makes EXR support a per-machine
+# accident (present on some Linux boxes via distro packages, absent on a clean
+# Windows/macOS setup) rather than something this project's CMakeLists can rely
+# on, and its transitive CMake dependency chain (OpenEXR -> config-mode ZLIB)
+# isn't satisfied by system zlib on Debian anyway. This project never reads/
+# writes EXR (HDR) images -- only JPEGs -- so disable it outright everywhere
+# instead of chasing a machine-specific link failure.
 hunter_config(
     OpenCV
     VERSION 5.0.0
@@ -65,6 +76,7 @@ hunter_config(
     CMAKE_ARGS
         BUILD_LIST=core,imgproc,imgcodecs,highgui,geometry
         OPENCV_FORCE_3RDPARTY_BUILD=ON
+        WITH_OPENEXR=OFF
         BUILD_TESTS=OFF
         BUILD_PERF_TESTS=OFF
         BUILD_EXAMPLES=OFF
