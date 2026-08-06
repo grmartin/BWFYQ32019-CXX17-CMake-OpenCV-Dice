@@ -19,7 +19,7 @@ Currently the plan is as follows (and subject to change):
 Validate inter-operating system support:
 
 1. ~~MacOS (Apple/Xcode Clang) : \[*COMPLETE*]~~
-2. Linux (GCC/G++8)
+2. ~~Linux (GCC/G++8) : \[*COMPLETE*]~~
 3. MSVC++ 15 (2017)
 
 ## Prerequisites
