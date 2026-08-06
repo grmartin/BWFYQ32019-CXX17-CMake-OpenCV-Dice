@@ -7,6 +7,7 @@
 
 #include <QApplication>
 #include <opencv2/imgproc.hpp>
+#include <opencv2/geometry.hpp> // OpenCV 5: shape analysis split out of imgproc
 
 #include "../JpegFile.h"
 #include "../DiceProc.h"

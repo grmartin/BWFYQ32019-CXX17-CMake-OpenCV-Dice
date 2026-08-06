@@ -388,7 +388,12 @@ macro(HunterGate)
     )
     include("${_hunter_self}/cmake/Hunter")
   else()
-    set(HUNTER_GATE_LOCATION "..")
+    # One directory above the CMake source root (i.e. the repo root, since the
+    # source root is src/): the LOCAL config lives at
+    # <repo-root>/cmake/Hunter/config.cmake. Must be an absolute path — Hunter
+    # checks it with EXISTS, which resolves relative paths against the cmake
+    # process's cwd, not this file.
+    set(HUNTER_GATE_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/..")
 
     string(COMPARE NOTEQUAL "${PROJECT_NAME}" "" _have_project_name)
     if(_have_project_name)

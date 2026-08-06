@@ -5,6 +5,7 @@
 #include "Contouring.h"
 
 #include <opencv2/opencv.hpp>
+#include <opencv2/geometry.hpp> // OpenCV 5: moments/approxPolyDP/arcLength moved here; not in the opencv.hpp umbrella
 #include "../utils/hsv.h"
 
 using namespace cv;

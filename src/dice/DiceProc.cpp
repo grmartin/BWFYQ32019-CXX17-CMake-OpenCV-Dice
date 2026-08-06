@@ -13,6 +13,10 @@
 #include "transformers/Edger.h"
 
 #include <opencv2/imgproc.hpp>
+// OpenCV 5 moved arcLength/approxPolyDP (and other shape analysis) out of
+// imgproc into the geometry module; its header is not pulled in by
+// imgproc.hpp or even the opencv.hpp umbrella.
+#include <opencv2/geometry.hpp>
 
 using namespace cvdice;
 

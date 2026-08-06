@@ -40,3 +40,35 @@ hunter_config(
         PNG_ARM_NEON=off
         "CMAKE_C_FLAGS=-include math.h"
 )
+
+# Hunter's OpenCV recipe tops out at 4.12.0-p1 (no 5.x), so OpenCV 5 is
+# pinned here as a custom version pointing straight at the upstream release
+# tarball. Unlike Hunter's own "-pN" OpenCV forks, the upstream source is
+# not "hunterized" -- it won't call back into Hunter for zlib/libpng/libjpeg
+# -- so OPENCV_FORCE_3RDPARTY_BUILD makes it compile its own bundled copies
+# of every enabled 3rdparty codec instead of picking up whatever happens to
+# be installed system-wide. A side effect worth knowing: nothing in this
+# build pulls Hunter's PNG package anymore, so the PNG workaround block
+# above is expected to be inert (it's kept in case anything ever routes
+# through Hunter's PNG again, and as documentation of the trap).
+#
+# BUILD_LIST keeps the build to the four modules this project actually
+# uses (OpenCV's build resolves their inter-module dependencies itself).
+# OpenCV 5 requires C++17 -- the same standard this project already builds
+# with -- and its compiler floor (MSVC 2017 19.14 / GCC 8 / Clang 9)
+# matches this project's documented minimums.
+hunter_config(
+    OpenCV
+    VERSION 5.0.0
+    URL "https://github.com/opencv/opencv/archive/refs/tags/5.0.0.tar.gz"
+    SHA1 "67e27a1ed9e9998bba211691dac766a8740fc476"
+    CMAKE_ARGS
+        BUILD_LIST=core,imgproc,imgcodecs,highgui,geometry
+        OPENCV_FORCE_3RDPARTY_BUILD=ON
+        BUILD_TESTS=OFF
+        BUILD_PERF_TESTS=OFF
+        BUILD_EXAMPLES=OFF
+        BUILD_opencv_apps=OFF
+        WITH_FFMPEG=OFF
+        WITH_PROTOBUF=OFF
+)
